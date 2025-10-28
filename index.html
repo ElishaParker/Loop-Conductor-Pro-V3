@@ -53,26 +53,39 @@
     const progress = document.getElementById("loadingProgress");
 
 async function initApp() {
-  // Begin 7s progress animation
+  // Start the progress bar animation
   progress.classList.add("animate");
 
-  // Show Continue button when progress hits 100%
+  // ✅ Create shared AudioContext immediately, but suspended
+  if (!window.sharedAudioCtx) {
+    window.sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  // Resume context safely once user interacts anywhere
+  const unlock = () => {
+    if (window.sharedAudioCtx.state === "suspended") {
+      window.sharedAudioCtx.resume();
+    }
+    document.removeEventListener("click", unlock);
+    document.removeEventListener("keydown", unlock);
+  };
+  document.addEventListener("click", unlock);
+  document.addEventListener("keydown", unlock);
+
+  // Begin background warm-up (connect oscillators, LFOs, etc.)
+  await initializeAudio();
+
+  // Fade out splash when timer completes
   setTimeout(() => {
-    document.getElementById("continueBtn").style.display = "inline-block";
-  }, 7000);
-
-  // Handle user click safely (AudioContext resume requirement)
-  document.getElementById("continueBtn").addEventListener("click", async () => {
-    await initializeAudio(); // now user-gesture compliant
-
     splash.classList.add("fade-out");
     setTimeout(() => {
       splash.style.display = "none";
       mainApp.style.display = "block";
-      bootMain();
+      bootMain(); // by now AudioContext is warm and unlocked
     }, 1000);
-  });
+  }, 7000);
 }
+
 
 
 
