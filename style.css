@@ -58,6 +58,27 @@ button#stopAll { background: #a00; color: #fff; }
 button#addTrack { background: #008; color: #fff; }
 button.removeTrack { background: #444; color: #fff; }
 
+#continueBtn {
+  background: #0a0;
+  color: #fff;
+  font-size: 1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  margin-top: 15px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+#continueBtn:hover {
+  background: #0c0;
+}
+#continueBtn.show {
+  opacity: 1;
+}
+
+
 /* ========== INPUTS & CANVAS ========== */
 input, select {
   background: #000;
