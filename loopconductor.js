@@ -17,13 +17,6 @@ if (!window.sharedAudioCtx) {
 }
 this.audioCtx = window.sharedAudioCtx;
 
-// ✅ Global Master Gain (created once)
-if (!globalMasterGain) {
-  globalMasterGain = this.audioCtx.createGain();
-  globalMasterGain.connect(this.audioCtx.destination);
-  globalMasterGain.gain.value = 0.8;
-}
-
 
     this.masterGain = this.audioCtx.createGain();
     this.masterGain.connect(globalMasterGain);
