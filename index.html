@@ -50,22 +50,30 @@
     const progress = document.getElementById("loadingProgress");
 
    async function initApp() {
-  // Trigger the 7-second fill animation
+  // Start loading bar animation
   progress.classList.add("animate");
 
-  // Wait for audio engine warmup
+  // Warm up audio engine
   await initializeAudio();
 
-  // When the loading animation ends, fade out the splash
-  progress.addEventListener("animationend", () => {
-    splash.classList.add("fade-out");
-    setTimeout(() => {
-      splash.style.display = "none";
-      mainApp.style.display = "block";
-      bootMain();
-    }, 1000); // allow fade to complete
-  });
+  // Poll every 100ms to check when progress hits 100%
+  const checkProgress = setInterval(() => {
+    const width = parseFloat(getComputedStyle(progress).width);
+    const total = parseFloat(getComputedStyle(document.getElementById("loadingBar")).width);
+    const percent = (width / total) * 100;
+
+    if (percent >= 99.5) {
+      clearInterval(checkProgress);
+      splash.classList.add("fade-out");
+      setTimeout(() => {
+        splash.style.display = "none";
+        mainApp.style.display = "block";
+        bootMain();
+      }, 1000);
+    }
+  }, 100);
 }
+
 
 
 
