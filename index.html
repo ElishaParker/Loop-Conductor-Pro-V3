@@ -7,15 +7,17 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
- <!-- Splash Screen -->
+<!-- Splash Screen -->
 <div id="splash">
   <div id="splashContent">
-    <h1>🎵 LoopConductor Pro v3.3.1</h1>
+    <h1>🎵 LoopConductor Pro v3.3.2</h1>
     <p id="splashStatus">Initializing Audio Engine…</p>
 
     <div id="loadingBar">
       <div id="loadingProgress"></div>
     </div>
+
+    <button id="continueBtn" style="display:none;">Continue</button>
 
     <p class="donate">
       Support open development:
@@ -23,6 +25,7 @@
     </p>
   </div>
 </div>
+
 
 
   <!-- Main App -->
@@ -49,30 +52,29 @@
     const mainApp = document.getElementById("mainApp");
     const progress = document.getElementById("loadingProgress");
 
-   async function initApp() {
-  // Start loading bar animation
+async function initApp() {
+  // Begin 7s progress animation
   progress.classList.add("animate");
 
-  // Warm up audio engine
-  await initializeAudio();
+  // Show Continue button when progress hits 100%
+  setTimeout(() => {
+    document.getElementById("continueBtn").style.display = "inline-block";
+  }, 7000);
 
-  // Poll every 100ms to check when progress hits 100%
-  const checkProgress = setInterval(() => {
-    const width = parseFloat(getComputedStyle(progress).width);
-    const total = parseFloat(getComputedStyle(document.getElementById("loadingBar")).width);
-    const percent = (width / total) * 100;
+  // Handle user click safely (AudioContext resume requirement)
+  document.getElementById("continueBtn").addEventListener("click", async () => {
+    await initializeAudio(); // now user-gesture compliant
 
-    if (percent >= 99.5) {
-      clearInterval(checkProgress);
-      splash.classList.add("fade-out");
-      setTimeout(() => {
-        splash.style.display = "none";
-        mainApp.style.display = "block";
-        bootMain();
-      }, 1000);
-    }
-  }, 100);
+    splash.classList.add("fade-out");
+    setTimeout(() => {
+      splash.style.display = "none";
+      mainApp.style.display = "block";
+      bootMain();
+    }, 1000);
+  });
 }
+
+
 
 
 
