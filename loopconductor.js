@@ -33,13 +33,14 @@ class LoopConductor {
     // Reuse the single global AudioContext (never create new ones per track)
     this.audioCtx = globalAudioCtx;
 
-    // Each track has its own gain and pan, feeding into the shared master gain
-    this.masterGain = this.audioCtx.createGain();
-    this.panNode = this.audioCtx.createStereoPanner();
+   // Each track uses its own gain and pan nodes, feeding into the shared master gain
+this.masterGain = this.audioCtx.createGain();
+this.panNode = this.audioCtx.createStereoPanner();
 
-    // Proper order: local → pan → master → global master
-    this.panNode.connect(this.masterGain);
-    this.masterGain.connect(globalMasterGain);
+// Connect in correct order (local → pan → master → global master)
+this.panNode.connect(this.masterGain);
+this.masterGain.connect(globalMasterGain);
+
 
     this.settings = settings ? JSON.parse(settings) : {
       bars: "4/4",
