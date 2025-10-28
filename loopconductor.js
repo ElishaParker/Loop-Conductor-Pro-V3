@@ -1,277 +1,138 @@
+/* ===== LoopConductor Pro Core ===== */
+
 let globalMasterGain = null;
-let initialized = false;
+let tracks = [];
 
-/* Initialize the AudioContext early to warm up the engine */
-export async function initializeAudio() {
-  if (initialized) return;
-  const tempCtx = new (window.AudioContext || window.webkitAudioContext)();
-  await tempCtx.resume();
-  globalMasterGain = tempCtx.createGain();
-  globalMasterGain.connect(tempCtx.destination);
-  initialized = true;
-}
-
-// ✅ Shared Audio Context across all tracks
+/* Initialize shared AudioContext once */
 if (!window.sharedAudioCtx) {
   window.sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
 }
-this.audioCtx = window.sharedAudioCtx;
+const audioCtx = window.sharedAudioCtx;
 
+/* === Utility === */
+function noteToFrequency(note, basePitch = 440) {
+  const noteRegex = /^([A-Ga-g])(#|b)?(\d)?$/;
+  const map = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
+  const match = note.match(noteRegex);
+  if (!match) return null;
+  let [, letter, accidental, octave] = match;
+  letter = letter.toUpperCase();
+  let semitone = map[letter];
+  if (accidental === "#") semitone++;
+  if (accidental === "b") semitone--;
+  const oct = octave ? parseInt(octave) : 4;
+  const n = semitone + (oct - 4) * 12;
+  return basePitch * Math.pow(2, n / 12);
+}
 
-    this.masterGain = this.audioCtx.createGain();
-    this.masterGain.connect(globalMasterGain);
-
-    this.panNode = this.audioCtx.createStereoPanner();
-    this.panNode.connect(this.masterGain);
-
-    this.settings = settings ? JSON.parse(settings) : {
-      bars: "4/4",
-      bpm: 120,
-      notes: "C4-D4-E4-G4",
-      basePitch: 440,
+/* === Track Class === */
+class LoopConductor {
+  constructor(panel) {
+    this.audioCtx = window.sharedAudioCtx;
+    this.panel = panel;
+    this.settings = {
       waveform: "sine",
-      trackVol: 0.8,
+      volume: 0.8,
       pan: 0,
       lfoPitch: 0,
       lfoPan: 0,
-      lfoVolume: 0
+      lfoVol: 0,
+      bars: 4,
+      bpm: 120,
+      notes: "C4,E4,G4,C5",
+      basePitch: 440
     };
-
-    this.panel = panel;
-    this.renderUI();
-    this.setupOscilloscope();
+    this.initNodes();
   }
 
-  renderUI() {
-    this.panel.className = "track-panel";
-    this.panel.innerHTML = `
-      <div class="track-header">
-        <h2 class="track-title"></h2>
-        <button class="removeTrack">🗑️</button>
-      </div>
-      <label>Bars:</label><input class="bars" value="${this.settings.bars}"><br>
-      <label>BPM:</label><input class="bpm" type="number" value="${this.settings.bpm}"><br>
-      <label>Notes:</label><input class="notes" value="${this.settings.notes}"><br>
-      <label>Base Pitch (Hz):</label><input class="basePitch" type="number" value="${this.settings.basePitch}" min="0" max="16000"><br>
-      <label>Waveform:</label>
-        <select class="waveform">
-          <option value="sine">sine</option>
-          <option value="square">square</option>
-          <option value="sawtooth">sawtooth</option>
-          <option value="triangle">triangle</option>
-        </select><br>
+  initNodes() {
+    this.gainNode = this.audioCtx.createGain();
+    this.panNode = this.audioCtx.createStereoPanner();
+    this.lfo = this.audioCtx.createOscillator();
+    this.lfoGain = this.audioCtx.createGain();
 
-      <div class="slider-row">
-        <label>Track Volume:</label>
-        <input class="trackVol" type="range" min="0" max="100" value="${this.settings.trackVol*100}">
-        <input class="valBox trackVolVal" readonly>
-      </div>
-
-      <div class="slider-row">
-        <label>Pan:</label>
-        <input class="pan" type="range" min="-100" max="100" value="${this.settings.pan*100}">
-        <input class="valBox panVal" readonly>
-      </div>
-
-      <div class="slider-row">
-        <label>LFO Pitch:</label>
-        <input class="lfoPitch" type="range" min="0" max="100" value="${this.settings.lfoPitch}">
-        <input class="valBox lfoPitchVal" readonly>
-      </div>
-
-      <div class="slider-row">
-        <label>LFO Pan:</label>
-        <input class="lfoPan" type="range" min="0" max="100" value="${this.settings.lfoPan}">
-        <input class="valBox lfoPanVal" readonly>
-      </div>
-
-      <div class="slider-row">
-        <label>LFO Volume:</label>
-        <input class="lfoVolume" type="range" min="0" max="100" value="${this.settings.lfoVolume}">
-        <input class="valBox lfoVolumeVal" readonly>
-      </div>
-
-      <canvas class="oscilloscope" width="350" height="100"></canvas>
-    `;
-
-    this.bindEvents();
+    this.lfo.connect(this.lfoGain);
+    this.lfoGain.connect(this.gainNode.gain);
+    this.gainNode.connect(globalMasterGain || this.audioCtx.destination);
+    this.lfo.start();
   }
 
-  bindEvents() {
-    const q = s => this.panel.querySelector(s);
-    q(".removeTrack").onclick = () => { this.stop(); this.panel.remove(); };
-
-    const upd = (slider, box, fn) => {
-      box.value = slider.value;
-      slider.oninput = e => { box.value = e.target.value; fn(parseInt(e.target.value)); };
-    };
-
-    upd(q(".trackVol"), q(".trackVolVal"), v => this.masterGain.gain.value = v / 100);
-    upd(q(".pan"), q(".panVal"), v => this.panNode.pan.value = v / 100);
-    upd(q(".lfoPitch"), q(".lfoPitchVal"), v => this.settings.lfoPitch = v);
-    upd(q(".lfoPan"), q(".lfoPanVal"), v => this.settings.lfoPan = v);
-    upd(q(".lfoVolume"), q(".lfoVolumeVal"), v => this.settings.lfoVolume = v);
-  }
-
-  noteToFreq(note) {
-    const match = note.match(/^([A-Ga-g])(#|b)?(\d)$/);
-    if (!match) return null;
-    const [_, letter, accidental, octaveStr] = match;
-    const octave = parseInt(octaveStr);
-    const noteBase = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
-    let semitone = noteBase[letter.toUpperCase()];
-    if (accidental === "#") semitone += 1;
-    if (accidental === "b") semitone -= 1;
-    const midi = (octave + 1) * 12 + semitone;
-
-    // base pitch fix: tune relative to entered basePitch
-    const baseRef = parseFloat(this.panel.querySelector(".basePitch").value) || 440;
-    return baseRef * Math.pow(2, (midi - 69) / 12);
-  }
-
-  getSecondsPerBeat() {
-    const bpm = parseFloat(this.panel.querySelector(".bpm").value) || 120;
-    return 60 / bpm;
-  }
-
-  /* Parse notes by bar count and sub-notes per bar */
-  parseSequence() {
-    const barsText = this.panel.querySelector(".bars").value.trim();
-    const [numBars] = barsText.split("/").map(n => parseInt(n));
-    const rawNotes = this.panel.querySelector(".notes").value.trim().split(/[-, ]+/);
-    let sequence = [];
-
-    if (rawNotes.length <= numBars) {
-      sequence = rawNotes;
-    } else {
-      const perBar = Math.ceil(rawNotes.length / numBars);
-      for (let i = 0; i < rawNotes.length; i += perBar)
-        sequence.push(rawNotes.slice(i, i + perBar));
-    }
-    return { numBars, sequence };
-  }
-
-  play() {
-    if (this.isPlaying) return;
-    this.isPlaying = true;
-    const { numBars, sequence } = this.parseSequence();
-    const spb = this.getSecondsPerBeat();
-    const beatDur = spb * 4 / numBars; // distribute over bars
-
-    let barIndex = 0;
-    const playNextBar = () => {
-      if (!this.isPlaying) return;
-      const notes = sequence[barIndex % sequence.length];
-      if (Array.isArray(notes)) {
-        const perNoteDur = beatDur / notes.length;
-        notes.forEach((note, i) => {
-          setTimeout(() => { if (note !== "Z" && note) this.playNote(this.noteToFreq(note), perNoteDur); }, i * perNoteDur * 1000);
-        });
-      } else if (notes !== "Z") {
-        this.playNote(this.noteToFreq(notes), beatDur);
-      }
-      barIndex++;
-      this.loopTimer = setTimeout(playNextBar, beatDur * 1000);
-    };
-    playNextBar();
-  }
-
-  playNote(freq, dur) {
-    if (!freq) return;
-    const osc = this.audioCtx.createOscillator();
-    const gain = this.audioCtx.createGain();
-    const pan = this.audioCtx.createStereoPanner();
-
-    const waveform = this.panel.querySelector(".waveform").value;
-    osc.type = waveform;
-
-    // LFOs
-    const pitchDepth = this.settings.lfoPitch / 100 * 5;
-    if (pitchDepth > 0) {
-      const lfo = this.audioCtx.createOscillator();
-      lfo.frequency.value = 2;
-      const lfoGain = this.audioCtx.createGain();
-      lfoGain.gain.value = pitchDepth;
-      lfo.connect(lfoGain).connect(osc.frequency);
-      lfo.start(); lfo.stop(this.audioCtx.currentTime + dur);
-    }
-
-    const volDepth = this.settings.lfoVolume / 100 * 0.3;
-    if (volDepth > 0) {
-      const lfoV = this.audioCtx.createOscillator();
-      lfoV.frequency.value = 2;
-      const g = this.audioCtx.createGain();
-      g.gain.value = volDepth;
-      lfoV.connect(g).connect(gain.gain);
-      lfoV.start(); lfoV.stop(this.audioCtx.currentTime + dur);
-    }
-
-    const panDepth = this.settings.lfoPan / 100;
-    if (panDepth > 0) {
-      const lfoP = this.audioCtx.createOscillator();
-      lfoP.frequency.value = 2;
-      const g = this.audioCtx.createGain();
-      g.gain.value = panDepth;
-      lfoP.connect(g).connect(pan.pan);
-      lfoP.start(); lfoP.stop(this.audioCtx.currentTime + dur);
-    }
-
+  playLoop() {
+    const { bpm, bars, notes, basePitch, waveform } = this.settings;
+    const beatDur = 60 / bpm;
+    const noteList = notes.split(/[, -]/).filter(n => n.trim() !== "");
+    const loopDur = bars * beatDur;
     const now = this.audioCtx.currentTime;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
-    gain.gain.linearRampToValueAtTime(0, now + dur);
 
-    osc.frequency.value = freq;
-    pan.pan.value = parseFloat(this.panel.querySelector(".pan").value) / 100;
-    osc.connect(gain).connect(pan).connect(this.panNode);
-    osc.start(now);
-    osc.stop(now + dur);
+    noteList.forEach((note, i) => {
+      const freq = noteToFrequency(note, basePitch);
+      if (!freq) return;
+      const osc = this.audioCtx.createOscillator();
+      osc.type = waveform;
+      osc.frequency.setValueAtTime(freq, now + i * beatDur);
+      const gain = this.audioCtx.createGain();
+      gain.gain.setValueAtTime(this.settings.volume, now + i * beatDur);
+      osc.connect(gain).connect(this.panNode).connect(globalMasterGain);
+      osc.start(now + i * beatDur);
+      osc.stop(now + i * beatDur + beatDur * 0.9);
+    });
+
+    setTimeout(() => this.playLoop(), loopDur * 1000);
   }
 
-  stop() {
-    this.isPlaying = false;
-    clearTimeout(this.loopTimer);
-  }
-
-  setupOscilloscope() {
-    const canvas = this.panel.querySelector(".oscilloscope");
-    const ctx = canvas.getContext("2d");
-    const analyser = this.audioCtx.createAnalyser();
-    analyser.fftSize = 2048;
-    this.masterGain.connect(analyser);
-    const buffer = new Uint8Array(analyser.fftSize);
-    const draw = () => {
-      requestAnimationFrame(draw);
-      analyser.getByteTimeDomainData(buffer);
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "#00ff00";
-      ctx.beginPath();
-      const slice = canvas.width / buffer.length;
-      let x = 0;
-      for (let i = 0; i < buffer.length; i++) {
-        const v = buffer[i] / 128.0;
-        const y = v * canvas.height / 2;
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        x += slice;
-      }
-      ctx.lineTo(canvas.width, canvas.height / 2);
-      ctx.stroke();
-    };
-    draw();
+  stopLoop() {
+    this.audioCtx.close();
   }
 }
 
-/* Factory and global controls */
-export function createTrack(container, settings) {
+/* === Global Controls === */
+document.getElementById("playAll").onclick = () => {
+  tracks.forEach(t => t.playLoop());
+};
+
+document.getElementById("stopAll").onclick = () => {
+  if (window.sharedAudioCtx.state !== "closed") {
+    window.sharedAudioCtx.suspend();
+  }
+};
+
+document.getElementById("masterVol").oninput = e => {
+  if (!globalMasterGain) {
+    globalMasterGain = audioCtx.createGain();
+    globalMasterGain.connect(audioCtx.destination);
+  }
+  globalMasterGain.gain.value = parseFloat(e.target.value);
+};
+
+document.getElementById("addTrack").onclick = () => {
+  const container = document.getElementById("trackContainer");
+  const idx = tracks.length + 1;
   const panel = document.createElement("div");
+  panel.className = "track-panel";
+  panel.innerHTML = `
+    <div class="track-header">
+      <h3>Track ${idx}</h3>
+      <button class="removeTrack">×</button>
+    </div>
+    <label>Waveform:
+      <select class="waveform">
+        <option>sine</option><option>square</option>
+        <option>sawtooth</option><option>triangle</option>
+      </select>
+    </label><br>
+    <label>Bars:<input type="number" class="bars" value="4" min="1" max="32"/></label><br>
+    <label>BPM:<input type="number" class="bpm" value="120" min="20" max="400"/></label><br>
+    <label>Notes:<input type="text" class="notes" value="C4,E4,G4,C5"/></label><br>
+    <label>Base Pitch (Hz):<input type="number" class="basePitch" value="440" min="20" max="16000"/></label><br>
+    <div class="slider-row"><label>Volume</label><input type="range" class="volume" min="0" max="1" step="0.01" value="0.8"/></div>
+    <div class="slider-row"><label>Pan</label><input type="range" class="pan" min="-1" max="1" step="0.01" value="0"/></div>
+  `;
   container.appendChild(panel);
-  const track = new LoopConductor(panel, settings);
-  panel.loopConductor = track;
-  panel.dataset.settings = JSON.stringify(track.settings);
-  return panel;
-}
-export function playAll(tracks) { tracks.forEach(t => t.loopConductor?.play?.()); }
-export function stopAll(tracks) { tracks.forEach(t => t.loopConductor?.stop?.()); }
-export function setGlobalVolume(v) { if (globalMasterGain) globalMasterGain.gain.value = v; }
+  const track = new LoopConductor(panel);
+  tracks.push(track);
+
+  panel.querySelector(".removeTrack").onclick = () => {
+    panel.remove();
+    tracks = tracks.filter(t => t !== track);
+  };
+};
