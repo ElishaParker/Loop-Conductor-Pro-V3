@@ -136,4 +136,62 @@ class LoopConductor {
 
   stop() {
     if (!this.isPlaying) return;
-    clea
+    clearInterval(this.intervalId);
+    this.isPlaying = false;
+    this.currentBeat = 0;
+  }
+
+  setupOscilloscope() {
+    const canvas = this.panel.querySelector('.oscilloscope');
+    const ctx = canvas.getContext('2d');
+    const analyser = this.audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    this.masterGain.connect(analyser);
+    const bufferLength = analyser.fftSize;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const draw = () => {
+      requestAnimationFrame(draw);
+      analyser.getByteTimeDomainData(dataArray);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#00ff00';
+      ctx.beginPath();
+      const sliceWidth = canvas.width / bufferLength;
+      let x = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = v * canvas.height / 2;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+        x += sliceWidth;
+      }
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+    };
+    draw();
+  }
+}
+
+// Factory + global
+export function createTrack(container, settings) {
+  const panel = document.createElement('div');
+  container.appendChild(panel);
+  const track = new LoopConductor(panel, settings);
+  panel.loopConductor = track;
+  panel.dataset.settings = JSON.stringify(track.settings);
+  return panel;
+}
+
+export function playAll(tracks) {
+  tracks.forEach((t) => t.loopConductor?.play?.());
+}
+
+export function stopAll(tracks) {
+  tracks.forEach((t) => t.loopConductor?.stop?.());
+}
+
+export function setGlobalVolume(vol) {
+  if (globalMasterGain) globalMasterGain.gain.value = vol;
+}
