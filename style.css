@@ -1,4 +1,4 @@
-/* ====== GLOBAL BASE ====== */
+/* ========== GLOBAL BASE ========== */
 body {
   background: #111;
   color: #eee;
@@ -6,24 +6,15 @@ body {
   text-align: center;
   margin: 0;
 }
-
-h1 {
-  margin: 20px 0;
-  letter-spacing: 1px;
-}
-
-.global-controls {
-  margin: 10px auto;
-}
-
+h1 { margin: 20px 0; }
+.global-controls { margin: 10px auto; }
 .track-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
 }
 
-/* ====== TRACK PANELS ====== */
+/* ========== TRACK PANELS ========== */
 .track-panel {
   background: #222;
   border: 1px solid #333;
@@ -31,38 +22,20 @@ h1 {
   padding: 10px;
   margin: 10px;
   width: 380px;
-  box-shadow: 0 0 6px #000;
-  transition: transform 0.2s ease;
 }
-
-.track-panel:hover {
-  transform: scale(1.01);
-}
-
 .track-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 5px;
 }
-
 .slider-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin: 4px 0;
 }
-
-.slider-row label {
-  flex: 1;
-  text-align: left;
-}
-
-.slider-row input[type=range] {
-  flex: 3;
-  margin: 0 5px;
-}
-
+.slider-row label { flex: 1; text-align: left; }
+.slider-row input[type=range] { flex: 3; margin: 0 5px; }
 .valBox {
   width: 40px;
   text-align: center;
@@ -70,8 +43,6 @@ h1 {
   color: #0f0;
   border: 1px solid #333;
 }
-
-/* ====== BUTTONS ====== */
 button {
   border: none;
   padding: 5px 10px;
@@ -79,18 +50,11 @@ button {
   margin: 4px;
   cursor: pointer;
   font-weight: bold;
-  transition: opacity 0.2s ease;
 }
-
-button:hover {
-  opacity: 0.8;
-}
-
 button#playAll { background: #0a0; color: #fff; }
 button#stopAll { background: #a00; color: #fff; }
 button#addTrack { background: #008; color: #fff; }
 button.removeTrack { background: #444; color: #fff; }
-
 input, select {
   background: #000;
   color: #0f0;
@@ -98,22 +62,18 @@ input, select {
   padding: 4px;
   margin: 3px;
 }
-
 canvas {
   background: #000;
   border: 1px solid #333;
   display: block;
   margin: 5px auto;
-  border-radius: 4px;
 }
 
-/* ====== SPLASH SCREEN ====== */
+/* ========== SPLASH SCREEN ========== */
 #splash {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: #000;
   color: #eee;
   display: flex;
@@ -124,17 +84,11 @@ canvas {
   opacity: 1;
   transition: opacity 1s ease;
 }
-
-#splash.fade-out {
-  opacity: 0;
-  pointer-events: none;
-}
-
+#splash.fade-out { opacity: 0; pointer-events: none; }
 #splashContent {
   text-align: center;
   animation: fadeIn 1.5s ease-in-out;
 }
-
 #loadingBar {
   width: 300px;
   height: 12px;
@@ -143,7 +97,6 @@ canvas {
   margin: 20px auto;
   overflow: hidden;
 }
-
 #loadingProgress {
   width: 0%;
   height: 100%;
@@ -151,40 +104,50 @@ canvas {
   border-radius: 8px;
   transition: width 0.2s ease;
 }
-
 .donate {
   font-size: 0.9em;
   color: #ccc;
 }
-
 .donate a {
   color: #0f0;
   text-decoration: none;
 }
+.donate a:hover { text-decoration: underline; }
 
-.donate a:hover {
-  text-decoration: underline;
+/* ========== CLICK OVERLAY ========== */
+#clickOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  color: #0f0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 10000;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  transition: opacity 0.8s ease;
+}
+#clickOverlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* ====== ANIMATIONS ====== */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ====== FOOTER ====== */
+/* ========== FOOTER ========== */
 footer {
   margin-top: 20px;
   font-size: 0.85em;
   color: #888;
 }
-
 footer a {
   color: #0f0;
   text-decoration: none;
   margin-left: 6px;
 }
+footer a:hover { text-decoration: underline; }
 
-footer a:hover {
-  text-decoration: underline;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
