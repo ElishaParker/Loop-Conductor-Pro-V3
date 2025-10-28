@@ -1,153 +1,152 @@
+//Index.html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loop Conductor Pro vFinal</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Loop Conductor Pro vFinal</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Click Overlay -->
-  <div id="clickOverlay">
-    <h2>Click anywhere to begin</h2>
-    <p>Initializing the Loop Conductor Engine...</p>
-  </div>
+<!-- Click Overlay -->
+<div id="clickOverlay">
+<h2>Click anywhere to begin</h2>
+<p>Initializing the Loop Conductor Engine...</p>
+</div>
 
-  <!-- Splash Screen -->
-  <div id="splash">
-    <div id="splashContent">
-      <h1>🎵 Loop Conductor Pro vFinal</h1>
-      <p>Initializing Audio Engine…</p>
-      <div id="loadingBar"><div id="loadingProgress"></div></div>
-      <p class="donate">
-        Support open development:
-        <a href="https://paypal.me/iamvibration" target="_blank">paypal.me/iamvibration</a>
-      </p>
-    </div>
-  </div>
+<!-- Splash Screen -->
+<div id="splash">
+<div id="splashContent">
+<h1>🎵 Loop Conductor Pro vFinal</h1>
+<p>Initializing Audio Engine…</p>
+<div id="loadingBar"><div id="loadingProgress"></div></div>
+<p class="donate">
+Support open development:
+<a href="https://paypal.me/iamvibration" target="_blank">paypal.me/iamvibration</a>
+</p>
+</div>
+</div>
 
-  <!-- Main App -->
-  <div id="mainApp" style="display:none;">
-    <h1>Loop Conductor Pro vFinal</h1>
-    <div class="global-controls">
-      <label>Master Volume:</label>
-      <input id="masterVolume" type="range" min="0" max="1" step="0.01" value="0.8" />
-      <button id="playAll">▶ Play All</button>
-      <button id="stopAll">⏹ Stop All</button>
-      <button id="addTrack">➕ Add Track</button>
-    </div>
+<!-- Main App -->
+<div id="mainApp" style="display:none;">
+<h1>Loop Conductor Pro vFinal</h1>
+<div class="global-controls">
+<label>Master Volume:</label>
+<input id="masterVolume" type="range" min="0" max="1" step="0.01" value="0.8" />
+<button id="playAll">▶ Play All</button>
+<button id="stopAll">⏹ Stop All</button>
+<button id="addTrack">➕ Add Track</button>
+</div>
 
-    <div id="trackContainer" class="track-container"></div>
+<div id="trackContainer" class="track-container"></div>
 
-    <footer>
-      Loop Conductor Pro vFinal — © 2025 Elisha B. Parker
-      <a href="https://github.com/ElishaParker/Loop-Conductor-Pro-V3" target="_blank">GitHub</a>
-    </footer>
-  </div>
+<footer>
+Loop Conductor Pro vFinal — © 2025 Elisha B. Parker
+<a href="https://github.com/ElishaParker/Loop-Conductor-Pro-V3" target="_blank">GitHub</a>
+</footer>
+</div>
 
-  <!-- Screen Controller -->
-  <script>
-    (function screenController() {
-      const desiredZoom = 0.67; // 67% zoom
-      document.addEventListener("DOMContentLoaded", () => {
-        document.body.style.transformOrigin = "top center";
-        document.body.style.transform = `scale(${desiredZoom})`;
-        document.body.style.width = `${100 / desiredZoom}%`;
-      });
-    })();
-  </script>
+<!-- Main JS -->
+<script type="module">
+import {
+createTrack, playAll, stopAll, setGlobalVolume, initializeAudio
+} from "./loopconductor.js";
 
-  <!-- Main App Logic -->
-  <script type="module">
-    import {
-      createTrack, playAll, stopAll, setGlobalVolume, initializeAudio
-    } from "./loopconductor.js";
+const splash = document.getElementById("splash");
+const mainApp = document.getElementById("mainApp");
+const progress = document.getElementById("loadingProgress");
+const clickOverlay = document.getElementById("clickOverlay");
+let audioReady = false;
 
-    const splash = document.getElementById("splash");
-    const mainApp = document.getElementById("mainApp");
-    const progress = document.getElementById("loadingProgress");
-    const clickOverlay = document.getElementById("clickOverlay");
-    let audioReady = false;
+async function initApp() {
+clickOverlay.style.display = "flex";
 
-    async function initApp() {
-      clickOverlay.style.display = "flex";
+document.body.addEventListener("click", async function startOnce() {
+document.body.removeEventListener("click", startOnce);
+clickOverlay.classList.add("fade-out");
 
-      document.body.addEventListener("click", async function startOnce() {
-        document.body.removeEventListener("click", startOnce);
-        clickOverlay.classList.add("fade-out");
+try {
+await initializeAudio();
+audioReady = true;
+console.log("✅ Audio engine initialized");
+setTimeout(() => {
+clickOverlay.style.display = "none";
+startSplash();
+}, 800);
+} catch (err) {
+console.error("Audio initialization failed:", err);
+}
+});
+}
 
-        try {
-          await initializeAudio();
-          audioReady = true;
-          console.log("✅ Audio engine initialized");
-          setTimeout(() => {
-            clickOverlay.style.display = "none";
-            startSplash();
-          }, 800);
-        } catch (err) {
-          console.error("Audio initialization failed:", err);
-        }
-      });
-    }
+function startSplash() {
+let pct = 0;
+const intv = setInterval(() => {
+pct += 2;
+progress.style.width = pct + "%";
+if (pct >= 100) {
+clearInterval(intv);
+splash.classList.add("fade-out");
+setTimeout(() => {
+splash.style.display = "none";
+mainApp.style.display = "block";
+if (audioReady) {
+bootMain();
+applyScreenScale(0.67); // ← trigger scaling once loaded
+}
+}, 1000);
+}
+}, 140);
+}
 
-    function startSplash() {
-      let pct = 0;
-      const intv = setInterval(() => {
-        pct += 2;
-        progress.style.width = pct + "%";
-        if (pct >= 100) {
-          clearInterval(intv);
-          splash.classList.add("fade-out");
-          setTimeout(() => {
-            splash.style.display = "none";
-            mainApp.style.display = "block";
-            if (audioReady) bootMain();
-          }, 1000);
-        }
-      }, 140);
-    }
+function bootMain() {
+const container = document.getElementById("trackContainer");
+const addBtn = document.getElementById("addTrack");
+const playBtn = document.getElementById("playAll");
+const stopBtn = document.getElementById("stopAll");
+const masterVol = document.getElementById("masterVolume");
+const tracks = [];
 
-    function bootMain() {
-      const container = document.getElementById("trackContainer");
-      const addBtn = document.getElementById("addTrack");
-      const playBtn = document.getElementById("playAll");
-      const stopBtn = document.getElementById("stopAll");
-      const masterVol = document.getElementById("masterVolume");
-      const tracks = [];
+const updateTitles = () => {
+tracks.forEach((t, i) =>
+t.querySelector(".track-title").textContent = "Track " + (i + 1)
+);
+};
 
-      const updateTitles = () => {
-        tracks.forEach((t, i) =>
-          t.querySelector(".track-title").textContent = "Track " + (i + 1)
-        );
-      };
+addBtn.onclick = () => {
+if (!audioReady) return;
+const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
+const newTrack = createTrack(container, lastSettings);
+tracks.push(newTrack);
+updateTitles();
+};
 
-      addBtn.onclick = () => {
-        if (!audioReady) return;
-        const lastSettings = tracks.length
-          ? tracks[tracks.length - 1].dataset.settings
-          : null;
+playBtn.onclick = () => playAll(tracks);
+stopBtn.onclick = () => stopAll(tracks);
+masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
 
-        const newTrack = createTrack(container, lastSettings);
-        tracks.push(newTrack);
-        updateTitles();
+addBtn.click(); // auto-create first track
+}
 
-        // Auto-scroll to show latest track
-        setTimeout(() => {
-          container.scrollTo({
-            left: container.scrollWidth,
-            behavior: "smooth"
-          });
-        }, 300);
-      };
+window.addEventListener("load", initApp);
+</script>
 
-      playBtn.onclick = () => playAll(tracks);
-      stopBtn.onclick = () => stopAll(tracks);
-      masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
+<!-- 🎛 Screen Controller (visual scaling to 67%) -->
+<script>
+function applyScreenScale(targetScale = 0.67) {
+const app = document.getElementById('mainApp');
+if (!app) return;
 
-      addBtn.click(); // Auto-create first track
-    }
+app.style.transformOrigin = 'top center';
+app.style.transform = `scale(${targetScale})`;
+app.style.transition = 'transform 0.4s ease';
 
-    window.addEventListener("load", initApp);
-  </script>
+const offsetX = (window.innerWidth - (app.offsetWidth * targetScale)) / 2;
+app.style.marginLeft = `${offsetX}px`;
+}
+
+window.addEventListener('resize', () => applyScreenScale(0.67));
+</script>
 </body>
 </html>
