@@ -7,6 +7,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Click Overlay -->
+  <div id="clickOverlay">
+    <h2>Click anywhere to begin</h2>
+    <p>Initializing the Loop Conductor Engine...</p>
+  </div>
+
   <!-- Splash Screen -->
   <div id="splash">
     <div id="splashContent">
@@ -14,16 +20,15 @@
       <p>Initializing Audio Engine…</p>
       <div id="loadingBar"><div id="loadingProgress"></div></div>
       <p class="donate">
-        Support open-source development:<br>
+        Support open development:
         <a href="https://paypal.me/iamvibration" target="_blank">paypal.me/iamvibration</a>
       </p>
     </div>
   </div>
 
-  <!-- Main Application -->
+  <!-- Main App -->
   <div id="mainApp" style="display:none;">
     <h1>Loop Conductor Pro vFinal</h1>
-
     <div class="global-controls">
       <label>Master Volume:</label>
       <input id="masterVolume" type="range" min="0" max="1" step="0.01" value="0.8" />
@@ -40,150 +45,82 @@
     </footer>
   </div>
 
-  <!-- Core Script -->
-<script type="module">
-  import {
-    createTrack, playAll, stopAll, setGlobalVolume, initializeAudio
-  } from "./loopconductor.js";
+  <script type="module">
+    import {
+      createTrack, playAll, stopAll, setGlobalVolume, initializeAudio
+    } from "./loopconductor.js";
 
-  const splash = document.getElementById("splash");
-  const mainApp = document.getElementById("mainApp");
-  const progress = document.getElementById("loadingProgress");
-  let audioReady = false;
+    const splash = document.getElementById("splash");
+    const mainApp = document.getElementById("mainApp");
+    const progress = document.getElementById("loadingProgress");
+    const clickOverlay = document.getElementById("clickOverlay");
+    let audioReady = false;
 
-  async function initApp() {
-    // Wait for user click to start audio context
-    document.body.addEventListener("click", async function startOnce() {
-      document.body.removeEventListener("click", startOnce);
-      try {
-        await initializeAudio();
-        audioReady = true;
-        console.log("✅ Audio engine initialized");
-        startSplash();
-      } catch (err) {
-        console.error("Audio initialization failed:", err);
-      }
-    });
-    console.log("👆 Click anywhere to begin audio initialization");
-  }
+    async function initApp() {
+      clickOverlay.style.display = "flex";
 
-  // Splash sequence after audio ready
-  function startSplash() {
-    let pct = 0;
-    const intv = setInterval(() => {
-      pct += 2;
-      progress.style.width = pct + "%";
-      if (pct >= 100) {
-        clearInterval(intv);
-        splash.classList.add("fade-out");
-        setTimeout(() => {
-          splash.style.display = "none";
-          mainApp.style.display = "block";
-          if (audioReady) bootMain();
-          else console.error("Audio engine not ready at splash end.");
-        }, 1000);
-      }
-    }, 140);
-  }
+      document.body.addEventListener("click", async function startOnce() {
+        document.body.removeEventListener("click", startOnce);
+        clickOverlay.classList.add("fade-out");
 
-  // Main engine UI setup
-  function bootMain() {
-    const container = document.getElementById("trackContainer");
-    const addBtn = document.getElementById("addTrack");
-    const playBtn = document.getElementById("playAll");
-    const stopBtn = document.getElementById("stopAll");
-    const masterVol = document.getElementById("masterVolume");
-    const tracks = [];
-
-    const updateTitles = () => {
-      tracks.forEach((t, i) => t.querySelector(".track-title").textContent = "Track " + (i + 1));
-    };
-
-    addBtn.onclick = () => {
-      if (!audioReady) {
-        console.warn("Audio not ready yet, ignoring track creation");
-        return;
-      }
-      const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
-      const newTrack = createTrack(container, lastSettings);
-      tracks.push(newTrack);
-      updateTitles();
-    };
-
-    playBtn.onclick = () => playAll(tracks);
-    stopBtn.onclick = () => stopAll(tracks);
-    masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
-
-    // Only add default track after verified audio context
-    if (audioReady) addBtn.click();
-  }
-
-  window.addEventListener("load", initApp);
-</script>
-
-
-  // Main app controls
-  function bootMain() {
-    const container = document.getElementById("trackContainer");
-    const addBtn = document.getElementById("addTrack");
-    const playBtn = document.getElementById("playAll");
-    const stopBtn = document.getElementById("stopAll");
-    const masterVol = document.getElementById("masterVolume");
-    const tracks = [];
-
-    function updateTitles() {
-      tracks.forEach((t, i) => t.querySelector(".track-title").textContent = "Track " + (i + 1));
+        try {
+          await initializeAudio();
+          audioReady = true;
+          console.log("✅ Audio engine initialized");
+          setTimeout(() => {
+            clickOverlay.style.display = "none";
+            startSplash();
+          }, 800);
+        } catch (err) {
+          console.error("Audio initialization failed:", err);
+        }
+      });
     }
 
-    addBtn.onclick = () => {
-      const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
-      const newTrack = createTrack(container, lastSettings);
-      tracks.push(newTrack);
-      updateTitles();
-    };
+    function startSplash() {
+      let pct = 0;
+      const intv = setInterval(() => {
+        pct += 2;
+        progress.style.width = pct + "%";
+        if (pct >= 100) {
+          clearInterval(intv);
+          splash.classList.add("fade-out");
+          setTimeout(() => {
+            splash.style.display = "none";
+            mainApp.style.display = "block";
+            if (audioReady) bootMain();
+          }, 1000);
+        }
+      }, 140);
+    }
 
-    playBtn.onclick = () => playAll(tracks);
-    stopBtn.onclick = () => stopAll(tracks);
-    masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
-
-    // Create first track after engine is ready
-    addBtn.click();
-  }
-
-  window.addEventListener("load", initApp);
-</script>
-
-
-    // Main UI Logic
     function bootMain() {
       const container = document.getElementById("trackContainer");
       const addBtn = document.getElementById("addTrack");
       const playBtn = document.getElementById("playAll");
       const stopBtn = document.getElementById("stopAll");
       const masterVol = document.getElementById("masterVolume");
+      const tracks = [];
 
-      let tracks = [];
+      const updateTitles = () => {
+        tracks.forEach((t, i) =>
+          t.querySelector(".track-title").textContent = "Track " + (i + 1)
+        );
+      };
 
-      // Title Update
-      function updateTitles() {
-        tracks.forEach((t, i) => t.querySelector(".track-title").textContent = "Track " + (i + 1));
-      }
-
-      // Add Track
       addBtn.onclick = () => {
+        if (!audioReady) return;
         const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
         const newTrack = createTrack(container, lastSettings);
         tracks.push(newTrack);
         updateTitles();
       };
 
-      // Global Controls
       playBtn.onclick = () => playAll(tracks);
       stopBtn.onclick = () => stopAll(tracks);
       masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
 
-      // Auto-create first track
-      addBtn.click();
+      addBtn.click(); // auto-create first track
     }
 
     window.addEventListener("load", initApp);
