@@ -13,24 +13,30 @@ h1 { margin: 20px 0; }
   flex-wrap: wrap;
   justify-content: center;
 }
-/* --- Track container layout (anchored hard left, expanding right) --- */
+/* --- Hybrid layout: centered start + horizontal scroll --- */
 .track-container {
   display: flex;
-  flex-direction: row;       /* side-by-side layout */
-  justify-content: flex-start; /* first track stays hard left */
+  flex-direction: row;
+  justify-content: flex-start;     /* first track on the left */
   align-items: flex-start;
   flex-wrap: nowrap;
   gap: 20px;
-  margin: 40px 0 40px 40px;   /* top, right, bottom, left */
-  width: 100%;
-  overflow-x: auto;           /* allow side scrolling */
+  margin: 40px auto;               /* center the overall container block */
+  width: 90vw;
+  overflow-x: auto;                /* horizontal scroll */
   overflow-y: hidden;
-  padding-right: 60px;
+  padding: 0 40px;
   box-sizing: border-box;
   scroll-behavior: smooth;
+  justify-self: center;
 }
 
-/* Optional — makes scrolling smoother and more modern */
+/* Keep centered under title when only one track exists */
+.track-container:has(.track:nth-child(1):last-child) {
+  justify-content: center;
+}
+
+/* scrollbar look */
 .track-container::-webkit-scrollbar {
   height: 10px;
 }
@@ -38,6 +44,7 @@ h1 { margin: 20px 0; }
   background: #333;
   border-radius: 5px;
 }
+
 
 
 
