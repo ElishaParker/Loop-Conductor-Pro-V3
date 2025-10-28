@@ -55,8 +55,7 @@ class LoopConductor {
     this.lfoGain.connect(this.gainNode.gain);
     this.gainNode.connect(globalMasterGain || this.audioCtx.destination);
     this.lfo.start();
-  }
-}
+  
 
 
 
