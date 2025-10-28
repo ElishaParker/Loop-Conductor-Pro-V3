@@ -45,7 +45,19 @@
     </footer>
   </div>
 
-  <!-- Main JS -->
+  <!-- Screen Controller -->
+  <script>
+    (function screenController() {
+      const desiredZoom = 0.67; // 67% zoom
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.style.transformOrigin = "top center";
+        document.body.style.transform = `scale(${desiredZoom})`;
+        document.body.style.width = `${100 / desiredZoom}%`;
+      });
+    })();
+  </script>
+
+  <!-- Main App Logic -->
   <script type="module">
     import {
       createTrack, playAll, stopAll, setGlobalVolume, initializeAudio
@@ -89,10 +101,7 @@
           setTimeout(() => {
             splash.style.display = "none";
             mainApp.style.display = "block";
-            if (audioReady) {
-              bootMain();
-              applyScreenScale(0.67); // ← trigger scaling once loaded
-            }
+            if (audioReady) bootMain();
           }, 1000);
         }
       }, 140);
@@ -114,37 +123,31 @@
 
       addBtn.onclick = () => {
         if (!audioReady) return;
-        const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
+        const lastSettings = tracks.length
+          ? tracks[tracks.length - 1].dataset.settings
+          : null;
+
         const newTrack = createTrack(container, lastSettings);
         tracks.push(newTrack);
         updateTitles();
+
+        // Auto-scroll to show latest track
+        setTimeout(() => {
+          container.scrollTo({
+            left: container.scrollWidth,
+            behavior: "smooth"
+          });
+        }, 300);
       };
 
       playBtn.onclick = () => playAll(tracks);
       stopBtn.onclick = () => stopAll(tracks);
       masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
 
-      addBtn.click(); // auto-create first track
+      addBtn.click(); // Auto-create first track
     }
 
     window.addEventListener("load", initApp);
-  </script>
-
-  <!-- 🎛 Screen Controller (visual scaling to 67%) -->
-  <script>
-    function applyScreenScale(targetScale = 0.67) {
-      const app = document.getElementById('mainApp');
-      if (!app) return;
-
-      app.style.transformOrigin = 'top center';
-      app.style.transform = `scale(${targetScale})`;
-      app.style.transition = 'transform 0.4s ease';
-
-      const offsetX = (window.innerWidth - (app.offsetWidth * targetScale)) / 2;
-      app.style.marginLeft = `${offsetX}px`;
-    }
-
-    window.addEventListener('resize', () => applyScreenScale(0.67));
   </script>
 </body>
 </html>
