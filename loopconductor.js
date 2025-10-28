@@ -42,7 +42,7 @@ class LoopConductor {
       notes: "C4,E4,G4,C5",
       basePitch: 440
     };
-    this.initNodes();   // <-- this was missing its method below in some builds
+    this.initNodes();
   }
 
   initNodes() {
@@ -56,6 +56,8 @@ class LoopConductor {
     this.gainNode.connect(globalMasterGain || this.audioCtx.destination);
     this.lfo.start();
   }
+}
+
 
 
   playLoop() {
