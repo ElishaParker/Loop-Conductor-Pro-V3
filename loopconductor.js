@@ -25,7 +25,6 @@ export async function initializeAudio() {
 /* -------- Track Class -------- */
 class LoopConductor {
   constructor(panel, settings = null) {
-    // Ensure the global audio engine is initialized first
     if (!globalAudioCtx || !globalMasterGain) {
       throw new Error("Audio engine not initialized. Call initializeAudio() first.");
     }
@@ -33,14 +32,13 @@ class LoopConductor {
     // Reuse the single global AudioContext (never create new ones per track)
     this.audioCtx = globalAudioCtx;
 
-   // Each track uses its own gain and pan nodes, feeding into the shared master gain
-this.masterGain = this.audioCtx.createGain();
-this.panNode = this.audioCtx.createStereoPanner();
+    // Each track has its own gain and pan nodes, feeding into the shared master gain
+    this.masterGain = this.audioCtx.createGain();
+    this.panNode = this.audioCtx.createStereoPanner();
 
-// Connect in correct order (local → pan → master → global master)
-this.panNode.connect(this.masterGain);
-this.masterGain.connect(globalMasterGain);
-
+    // Proper order: local → pan → master → global master
+    this.panNode.connect(this.masterGain);
+    this.masterGain.connect(globalMasterGain);
 
     this.settings = settings ? JSON.parse(settings) : {
       bars: "4/4",
