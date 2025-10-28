@@ -2,7 +2,7 @@
 
 ### Modular Web Audio Sequencer • Global Control • Visual Oscilloscopes
 
-[▶ **Live Demo**](https://elishaparker.github.io/Loop-Conductor-Pro/)
+[▶ **Live Demo**](https://elishaparker.github.io/Loop-Conductor-Pro-V3/)
 
 ---
 
@@ -80,7 +80,7 @@ start index.html   # (Windows)
 open index.html    # (macOS)
 ```
 
-Or run the [**Live Demo**](https://elishaparker.github.io/Loop-Conductor-Pro/) directly.
+Or run the [**Live Demo**](https://elishaparker.github.io/Loop-Conductor-Pro-V3/) directly.
 
 ---
 
