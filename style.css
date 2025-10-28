@@ -87,7 +87,7 @@ canvas {
 #splash.fade-out { opacity: 0; pointer-events: none; }
 #splashContent {
   text-align: center;
-  animation: fadeIn 1.5s ease-in-out;
+  animation: fadeOut 1.5s ease-out;
 }
 #loadingBar {
   width: 300px;
