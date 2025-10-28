@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LoopConductor Pro v3.1</title>
+  <title>LoopConductor Pro v3.2</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🎵 LoopConductor Pro v3.1</h1>
+  <h1>🎵 LoopConductor Pro v3.2</h1>
 
   <div class="global-controls">
     <label>Master Volume:</label>
@@ -20,35 +20,30 @@
   <div id="trackContainer" class="track-container"></div>
 
   <script type="module">
-    import { createTrack, playAll, stopAll, setGlobalVolume } from './loopconductor.js';
+    import { createTrack, playAll, stopAll, setGlobalVolume } from "./loopconductor.js";
 
-    const container = document.getElementById('trackContainer');
-    const addBtn = document.getElementById('addTrack');
-    const playAllBtn = document.getElementById('playAll');
-    const stopAllBtn = document.getElementById('stopAll');
-    const masterVolSlider = document.getElementById('masterVolume');
-
+    const container = document.getElementById("trackContainer");
+    const addBtn = document.getElementById("addTrack");
+    const playAllBtn = document.getElementById("playAll");
+    const stopAllBtn = document.getElementById("stopAll");
+    const masterVol = document.getElementById("masterVolume");
     let tracks = [];
 
     function updateTitles() {
-      tracks.forEach((track, i) => {
-        const title = track.querySelector('.track-title');
-        if (title) title.textContent = 'Track ' + (i + 1);
-      });
+      tracks.forEach((t, i) => t.querySelector(".track-title").textContent = "Track " + (i + 1));
     }
 
     addBtn.onclick = () => {
-      const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
-      const newTrack = createTrack(container, lastSettings);
+      const last = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
+      const newTrack = createTrack(container, last);
       tracks.push(newTrack);
       updateTitles();
     };
-
     playAllBtn.onclick = () => playAll(tracks);
     stopAllBtn.onclick = () => stopAll(tracks);
-    masterVolSlider.oninput = (e) => setGlobalVolume(parseFloat(e.target.value));
+    masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
 
-    addBtn.click();
+    addBtn.click();  /* start with one track */
   </script>
 </body>
 </html>
