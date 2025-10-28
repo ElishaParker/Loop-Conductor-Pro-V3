@@ -21,9 +21,9 @@ h1 { margin: 20px 0; }
   justify-content: flex-start; /* align first track to far left */
   align-items: flex-start;
   flex-wrap: nowrap;         /* all tracks in one row */
-  gap: 20px;                 /* consistent spacing */
-  margin: 40px auto;
-  width: 90vw;               /* span across screen width */
+  gap: 10px;                 /* consistent spacing */
+  margin: 10px auto;
+  width: 10vw;               /* span across screen width */
   overflow-x: auto;          /* allow horizontal scroll if needed */
   padding: 0 40px;
   box-sizing: border-box;
