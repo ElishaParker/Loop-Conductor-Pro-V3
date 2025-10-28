@@ -45,12 +45,11 @@
     </footer>
   </div>
 
+  <!-- Main JS -->
   <script type="module">
     import {
       createTrack, playAll, stopAll, setGlobalVolume, initializeAudio
     } from "./loopconductor.js";
-
-
 
     const splash = document.getElementById("splash");
     const mainApp = document.getElementById("mainApp");
@@ -90,7 +89,10 @@
           setTimeout(() => {
             splash.style.display = "none";
             mainApp.style.display = "block";
-            if (audioReady) bootMain();
+            if (audioReady) {
+              bootMain();
+              applyScreenScale(0.67); // ← trigger scaling once loaded
+            }
           }, 1000);
         }
       }, 140);
@@ -126,6 +128,23 @@
     }
 
     window.addEventListener("load", initApp);
+  </script>
+
+  <!-- 🎛 Screen Controller (visual scaling to 67%) -->
+  <script>
+    function applyScreenScale(targetScale = 0.67) {
+      const app = document.getElementById('mainApp');
+      if (!app) return;
+
+      app.style.transformOrigin = 'top center';
+      app.style.transform = `scale(${targetScale})`;
+      app.style.transition = 'transform 0.4s ease';
+
+      const offsetX = (window.innerWidth - (app.offsetWidth * targetScale)) / 2;
+      app.style.marginLeft = `${offsetX}px`;
+    }
+
+    window.addEventListener('resize', () => applyScreenScale(0.67));
   </script>
 </body>
 </html>
