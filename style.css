@@ -1,17 +1,133 @@
-body{background:#111;color:#eee;font-family:Arial;text-align:center;margin:0;}
-h1{margin:20px 0;}
-.global-controls{margin:10px auto;}
-.track-container{display:flex;flex-wrap:wrap;justify-content:center;}
-.track-panel{background:#222;border:1px solid #333;border-radius:12px;padding:10px;margin:10px;width:380px;}
-.track-header{display:flex;justify-content:space-between;align-items:center;}
-.slider-row{display:flex;align-items:center;justify-content:space-between;margin:4px 0;}
-.slider-row label{flex:1;text-align:left;}
-.slider-row input[type=range]{flex:3;margin:0 5px;}
-.valBox{width:40px;text-align:center;background:#000;color:#0f0;border:1px solid #333;}
-button{border:none;padding:5px 10px;border-radius:6px;margin:4px;cursor:pointer;font-weight:bold;}
-button#playAll{background:#0a0;color:#fff;}
-button#stopAll{background:#a00;color:#fff;}
-button#addTrack{background:#008;color:#fff;}
-button.removeTrack{background:#444;color:#fff;}
-input,select{background:#000;color:#0f0;border:1px solid #333;padding:4px;margin:3px;}
-canvas{background:#000;border:1px solid #333;display:block;margin:5px auto;}
+/* ========== GLOBAL BASE ========== */
+body {
+  background: #111;
+  color: #eee;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+}
+h1 { margin: 20px 0; }
+.global-controls { margin: 10px auto; }
+.track-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ========== TRACK PANELS ========== */
+.track-panel {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 10px;
+  margin: 10px;
+  width: 380px;
+}
+.track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.slider-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 0;
+}
+.slider-row label { flex: 1; text-align: left; }
+.slider-row input[type=range] { flex: 3; margin: 0 5px; }
+.valBox {
+  width: 40px;
+  text-align: center;
+  background: #000;
+  color: #0f0;
+  border: 1px solid #333;
+}
+button {
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  margin: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+button#playAll { background: #0a0; color: #fff; }
+button#stopAll { background: #a00; color: #fff; }
+button#addTrack { background: #008; color: #fff; }
+button.removeTrack { background: #444; color: #fff; }
+input, select {
+  background: #000;
+  color: #0f0;
+  border: 1px solid #333;
+  padding: 4px;
+  margin: 3px;
+}
+canvas {
+  background: #000;
+  border: 1px solid #333;
+  display: block;
+  margin: 5px auto;
+}
+
+/* ========== SPLASH SCREEN ========== */
+#splash {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #000;
+  color: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+#splash.fade-out { opacity: 0; pointer-events: none; }
+#splashContent {
+  text-align: center;
+  animation: fadeIn 1.5s ease-in-out;
+}
+#loadingBar {
+  width: 300px;
+  height: 12px;
+  background: #333;
+  border-radius: 8px;
+  margin: 20px auto;
+  overflow: hidden;
+}
+#loadingProgress {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #0f0, #0a0);
+  border-radius: 8px;
+  transition: width 0.2s ease;
+}
+.donate {
+  font-size: 0.9em;
+  color: #ccc;
+}
+.donate a {
+  color: #0f0;
+  text-decoration: none;
+}
+.donate a:hover { text-decoration: underline; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== FOOTER ========== */
+footer {
+  margin-top: 20px;
+  font-size: 0.85em;
+  color: #888;
+}
+footer a {
+  color: #0f0;
+  text-decoration: none;
+  margin-left: 6px;
+}
+footer a:hover { text-decoration: underline; }
