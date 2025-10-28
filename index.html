@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoopConductor Pro v3</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>🎵 LoopConductor Pro v3</h1>
+  <div class="global-controls">
+    <button id="playAll">▶ Play All</button>
+    <button id="stopAll">⏹ Stop All</button>
+    <button id="addTrack">➕ Add Track</button>
+  </div>
+  <div id="trackContainer" class="track-container"></div>
+
+  <script type="module">
+    import { createTrack, playAll, stopAll } from './loopconductor.js';
+
+    const container = document.getElementById('trackContainer');
+    const addBtn = document.getElementById('addTrack');
+    const playAllBtn = document.getElementById('playAll');
+    const stopAllBtn = document.getElementById('stopAll');
+
+    let tracks = [];
+
+    function updateTrackTitles() {
+      tracks.forEach((t, i) => {
+        const title = t.querySelector('.track-title');
+        if (title) title.textContent = 'Track ' + (i + 1);
+      });
+    }
+
+    addBtn.onclick = () => {
+      const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
+      const newTrack = createTrack(container, lastSettings);
+      tracks.push(newTrack);
+      updateTrackTitles();
+    };
+
+    playAllBtn.onclick = () => playAll(tracks);
+    stopAllBtn.onclick = () => stopAll(tracks);
+
+    // Add initial track
+    addBtn.click();
+  </script>
+</body>
+</html>

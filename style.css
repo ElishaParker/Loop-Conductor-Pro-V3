@@ -1,0 +1,32 @@
+body {
+  background: #111;
+  color: #eee;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+.global-controls { margin: 10px; }
+.track-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.track-panel {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 10px;
+  margin: 10px;
+  width: 380px;
+}
+.track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+canvas {
+  background: #000;
+  border: 1px solid #333;
+  display: block;
+  margin: 5px auto;
+}
+button { cursor: pointer; border-radius: 6px; }
