@@ -22,21 +22,16 @@ export async function initializeAudio() {
   console.log("🎵 Audio Engine Initialized");
 }
 
-/* -------- Track Class -------- */
 class LoopConductor {
   constructor(panel, settings = null) {
     if (!globalAudioCtx || !globalMasterGain) {
       throw new Error("Audio engine not initialized. Call initializeAudio() first.");
     }
 
-    // Reuse the single global AudioContext (never create new ones per track)
     this.audioCtx = globalAudioCtx;
-
-    // Each track has its own gain and pan nodes, feeding into the shared master gain
     this.masterGain = this.audioCtx.createGain();
     this.panNode = this.audioCtx.createStereoPanner();
 
-    // Proper order: local → pan → master → global master
     this.panNode.connect(this.masterGain);
     this.masterGain.connect(globalMasterGain);
 
@@ -56,8 +51,17 @@ class LoopConductor {
     this.panel = panel;
     this.renderUI();
     this.setupOscilloscope();
+  }  // ✅ CLOSE constructor only, not class
+
+  renderUI() {
+    this.panel.className = "track-panel";
+    const idx = document.querySelectorAll(".track-panel").length + 1;
+    // ...
   }
-}
+
+  // other methods (bindEvents, play, stop, etc.)
+}  // ✅ CLOSE class here, only once
+
 
 
   renderUI() {
