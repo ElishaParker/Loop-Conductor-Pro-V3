@@ -49,24 +49,24 @@
     const mainApp = document.getElementById("mainApp");
     const progress = document.getElementById("loadingProgress");
 
-    async function initApp() {
-  // Start the smooth 7-second fill animation
+   async function initApp() {
+  // Trigger the 7-second fill animation
   progress.classList.add("animate");
 
   // Wait for audio engine warmup
   await initializeAudio();
 
-  // Auto-remove splash after animation completes
-  const splashDuration = 7000; // ms
-  setTimeout(() => {
+  // When the loading animation ends, fade out the splash
+  progress.addEventListener("animationend", () => {
     splash.classList.add("fade-out");
     setTimeout(() => {
       splash.style.display = "none";
       mainApp.style.display = "block";
       bootMain();
-    }, 1000); // fade-out duration
-  }, splashDuration);
+    }, 1000); // allow fade to complete
+  });
 }
+
 
 
 
