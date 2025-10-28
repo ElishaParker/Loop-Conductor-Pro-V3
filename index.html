@@ -3,26 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LoopConductor Pro v3.3</title>
+  <title>Loop Conductor Pro vFinal</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Splash Screen -->
   <div id="splash">
     <div id="splashContent">
-      <h1>🎵 LoopConductor Pro v3.3</h1>
+      <h1>🎵 Loop Conductor Pro vFinal</h1>
       <p>Initializing Audio Engine…</p>
       <div id="loadingBar"><div id="loadingProgress"></div></div>
       <p class="donate">
-        Support open development:
+        Support open-source development:<br>
         <a href="https://paypal.me/iamvibration" target="_blank">paypal.me/iamvibration</a>
       </p>
     </div>
   </div>
 
-  <!-- Main App -->
+  <!-- Main Application -->
   <div id="mainApp" style="display:none;">
-    <h1>LoopConductor Pro v3.3</h1>
+    <h1>Loop Conductor Pro vFinal</h1>
+
     <div class="global-controls">
       <label>Master Volume:</label>
       <input id="masterVolume" type="range" min="0" max="1" step="0.01" value="0.8" />
@@ -30,28 +31,33 @@
       <button id="stopAll">⏹ Stop All</button>
       <button id="addTrack">➕ Add Track</button>
     </div>
+
     <div id="trackContainer" class="track-container"></div>
+
     <footer>
-      LoopConductor Pro v3.3 — © 2025 Elisha B. Parker
-      <a href="https://github.com/ElishaParker/Loop-Conductor-Pro" target="_blank">GitHub</a>
+      Loop Conductor Pro vFinal — © 2025 Elisha B. Parker
+      <a href="https://github.com/ElishaParker/Loop-Conductor-Pro-V3" target="_blank">GitHub</a>
     </footer>
   </div>
 
+  <!-- Core Script -->
   <script type="module">
-    import { createTrack, playAll, stopAll, setGlobalVolume, initializeAudio } from "./loopconductor.js";
+    import {
+      createTrack, playAll, stopAll, setGlobalVolume, initializeAudio
+    } from "./loopconductor.js";
 
     const splash = document.getElementById("splash");
     const mainApp = document.getElementById("mainApp");
     const progress = document.getElementById("loadingProgress");
 
+    // Splash + Initialization
     async function initApp() {
-      // Fake loader + warmup
       let pct = 0;
-      const intv = setInterval(() => {
+      const interval = setInterval(() => {
         pct += 2;
         progress.style.width = pct + "%";
         if (pct >= 100) {
-          clearInterval(intv);
+          clearInterval(interval);
           splash.classList.add("fade-out");
           setTimeout(() => {
             splash.style.display = "none";
@@ -60,36 +66,43 @@
           }, 1000);
         }
       }, 140);
+
       await initializeAudio();
     }
 
+    // Main UI Logic
     function bootMain() {
       const container = document.getElementById("trackContainer");
       const addBtn = document.getElementById("addTrack");
-      const playAllBtn = document.getElementById("playAll");
-      const stopAllBtn = document.getElementById("stopAll");
+      const playBtn = document.getElementById("playAll");
+      const stopBtn = document.getElementById("stopAll");
       const masterVol = document.getElementById("masterVolume");
+
       let tracks = [];
 
+      // Title Update
       function updateTitles() {
         tracks.forEach((t, i) => t.querySelector(".track-title").textContent = "Track " + (i + 1));
       }
 
+      // Add Track
       addBtn.onclick = () => {
-        const last = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
-        const newTrack = createTrack(container, last);
+        const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
+        const newTrack = createTrack(container, lastSettings);
         tracks.push(newTrack);
         updateTitles();
       };
 
-      playAllBtn.onclick = () => playAll(tracks);
-      stopAllBtn.onclick = () => stopAll(tracks);
+      // Global Controls
+      playBtn.onclick = () => playAll(tracks);
+      stopBtn.onclick = () => stopAll(tracks);
       masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
 
+      // Auto-create first track
       addBtn.click();
     }
 
-    initApp();
+    window.addEventListener("load", initApp);
   </script>
 </body>
 </html>
