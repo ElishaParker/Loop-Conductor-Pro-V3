@@ -1,203 +1,156 @@
+//Style.css
+
 /* ========== GLOBAL BASE ========== */
 body {
-  background: #111;
-  color: #eee;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  margin: 0;
+background: #111;
+color: #eee;
+font-family: Arial, sans-serif;
+text-align: center;
+margin: 0;
 }
 h1 { margin: 20px 0; }
 .global-controls { margin: 10px auto; }
 .track-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-/* --- Hybrid layout: centered start + horizontal scroll --- */
-.track-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;     /* first track on the left */
-  align-items: flex-start;
-  flex-wrap: nowrap;
-  gap: 20px;
-  margin: 40px auto;               /* center the overall container block */
-  width: 90vw;
-  overflow-x: auto;                /* horizontal scroll */
-  overflow-y: hidden;
-  padding: 0 40px;
-  box-sizing: border-box;
-  scroll-behavior: smooth;
-  justify-self: center;
-}
-
-/* Keep centered under title when only one track exists */
-.track-container:has(.track:nth-child(1):last-child) {
-  justify-content: center;
-}
-
-/* scrollbar look */
-.track-container::-webkit-scrollbar {
-  height: 10px;
-}
-.track-container::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 5px;
-}
-
-
-
-
-
-/* --- Individual track panels --- */
-.track-panel {
-  background: #222;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.4);
-  min-width: 300px;
-  max-width: 360px;
-  transition: transform 0.25s ease;
-}
-.track-panel:hover {
-  transform: scale(1.02);
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
 }
 
 /* ========== TRACK PANELS ========== */
 .track-panel {
-  background: #222;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 10px;
-  margin: 10px;
-  width: 380px;
+background: #222;
+border: 1px solid #333;
+border-radius: 12px;
+padding: 10px;
+margin: 10px;
+width: 380px;
 }
 .track-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+display: flex;
+justify-content: space-between;
+align-items: center;
 }
 .slider-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 4px 0;
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin: 4px 0;
 }
 .slider-row label { flex: 1; text-align: left; }
 .slider-row input[type=range] { flex: 3; margin: 0 5px; }
 .valBox {
-  width: 40px;
-  text-align: center;
-  background: #000;
-  color: #0f0;
-  border: 1px solid #333;
+width: 40px;
+text-align: center;
+background: #000;
+color: #0f0;
+border: 1px solid #333;
 }
 button {
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-  margin: 4px;
-  cursor: pointer;
-  font-weight: bold;
+border: none;
+padding: 5px 10px;
+border-radius: 6px;
+margin: 4px;
+cursor: pointer;
+font-weight: bold;
 }
 button#playAll { background: #0a0; color: #fff; }
 button#stopAll { background: #a00; color: #fff; }
 button#addTrack { background: #008; color: #fff; }
 button.removeTrack { background: #444; color: #fff; }
 input, select {
-  background: #000;
-  color: #0f0;
-  border: 1px solid #333;
-  padding: 4px;
-  margin: 3px;
+background: #000;
+color: #0f0;
+border: 1px solid #333;
+padding: 4px;
+margin: 3px;
 }
 canvas {
-  background: #000;
-  border: 1px solid #333;
-  display: block;
-  margin: 5px auto;
+background: #000;
+border: 1px solid #333;
+display: block;
+margin: 5px auto;
 }
 
 /* ========== SPLASH SCREEN ========== */
 #splash {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: #000;
-  color: #eee;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 9999;
-  opacity: 1;
-  transition: opacity 1s ease;
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+background: #000;
+color: #eee;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-direction: column;
+z-index: 9999;
+opacity: 1;
+transition: opacity 1s ease;
 }
 #splash.fade-out { opacity: 0; pointer-events: none; }
 #splashContent {
-  text-align: center;
-  animation: fadeIn 1.5s ease-in-out;
+text-align: center;
+animation: fadeIn 1.5s ease-in-out;
 }
 #loadingBar {
-  width: 300px;
-  height: 12px;
-  background: #333;
-  border-radius: 8px;
-  margin: 20px auto;
-  overflow: hidden;
+width: 300px;
+height: 12px;
+background: #333;
+border-radius: 8px;
+margin: 20px auto;
+overflow: hidden;
 }
 #loadingProgress {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, #0f0, #0a0);
-  border-radius: 8px;
-  transition: width 0.2s ease;
+width: 0%;
+height: 100%;
+background: linear-gradient(90deg, #0f0, #0a0);
+border-radius: 8px;
+transition: width 0.2s ease;
 }
 .donate {
-  font-size: 0.9em;
-  color: #ccc;
+font-size: 0.9em;
+color: #ccc;
 }
 .donate a {
-  color: #0f0;
-  text-decoration: none;
+color: #0f0;
+text-decoration: none;
 }
 .donate a:hover { text-decoration: underline; }
 
 /* ========== CLICK OVERLAY ========== */
 #clickOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  color: #0f0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 10000;
-  text-align: center;
-  font-family: Arial, sans-serif;
-  transition: opacity 0.8s ease;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.9);
+color: #0f0;
+display: none;
+align-items: center;
+justify-content: center;
+flex-direction: column;
+z-index: 10000;
+text-align: center;
+font-family: Arial, sans-serif;
+transition: opacity 0.8s ease;
 }
 #clickOverlay.fade-out {
-  opacity: 0;
-  pointer-events: none;
+opacity: 0;
+pointer-events: none;
 }
 
 /* ========== FOOTER ========== */
 footer {
-  margin-top: 20px;
-  font-size: 0.85em;
-  color: #888;
+margin-top: 20px;
+font-size: 0.85em;
+color: #888;
 }
 footer a {
-  color: #0f0;
-  text-decoration: none;
-  margin-left: 6px;
+color: #0f0;
+text-decoration: none;
+margin-left: 6px;
 }
 footer a:hover { text-decoration: underline; }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
 }
 
