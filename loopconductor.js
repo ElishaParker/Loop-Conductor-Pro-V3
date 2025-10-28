@@ -1,26 +1,35 @@
+/* ==========================================================
+   Loop Conductor Pro v3.4 — Unified AudioContext Architecture
+   Compatible with Chrome, Firefox, Safari
+   ========================================================== */
+
+let globalAudioCtx = null;
 let globalMasterGain = null;
 let initialized = false;
 
-/* Initialize the AudioContext early to warm up the engine */
+/* -------- Initialize Shared Audio Context -------- */
 export async function initializeAudio() {
-  if (initialized) return;
-  const tempCtx = new (window.AudioContext || window.webkitAudioContext)();
-  await tempCtx.resume();
-  globalMasterGain = tempCtx.createGain();
-  globalMasterGain.connect(tempCtx.destination);
+  if (initialized && globalAudioCtx && globalAudioCtx.state !== "closed") return;
+
+  globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  await globalAudioCtx.resume();
+
+  globalMasterGain = globalAudioCtx.createGain();
+  globalMasterGain.connect(globalAudioCtx.destination);
+  globalMasterGain.gain.value = 0.8;
+
   initialized = true;
+  console.log("🎵 Audio Engine Initialized");
 }
 
-/* Main Track Class */
+/* -------- Track Class -------- */
 class LoopConductor {
   constructor(panel, settings = null) {
-    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (!globalMasterGain) {
-      globalMasterGain = this.audioCtx.createGain();
-      globalMasterGain.connect(this.audioCtx.destination);
-      globalMasterGain.gain.value = 0.8;
-    }
+    if (!globalAudioCtx) throw new Error("AudioContext not initialized");
 
+    this.audioCtx = globalAudioCtx;
+
+    // each track uses its own gain & pan nodes, all feeding global master
     this.masterGain = this.audioCtx.createGain();
     this.masterGain.connect(globalMasterGain);
 
@@ -47,9 +56,11 @@ class LoopConductor {
 
   renderUI() {
     this.panel.className = "track-panel";
+    const idx = document.querySelectorAll(".track-panel").length + 1;
+
     this.panel.innerHTML = `
       <div class="track-header">
-        <h2 class="track-title"></h2>
+        <h2 class="track-title">Track ${idx}</h2>
         <button class="removeTrack">🗑️</button>
       </div>
       <label>Bars:</label><input class="bars" value="${this.settings.bars}"><br>
@@ -57,12 +68,12 @@ class LoopConductor {
       <label>Notes:</label><input class="notes" value="${this.settings.notes}"><br>
       <label>Base Pitch (Hz):</label><input class="basePitch" type="number" value="${this.settings.basePitch}" min="0" max="16000"><br>
       <label>Waveform:</label>
-        <select class="waveform">
-          <option value="sine">sine</option>
-          <option value="square">square</option>
-          <option value="sawtooth">sawtooth</option>
-          <option value="triangle">triangle</option>
-        </select><br>
+      <select class="waveform">
+        <option value="sine">sine</option>
+        <option value="square">square</option>
+        <option value="sawtooth">sawtooth</option>
+        <option value="triangle">triangle</option>
+      </select><br>
 
       <div class="slider-row">
         <label>Track Volume:</label>
@@ -126,8 +137,6 @@ class LoopConductor {
     if (accidental === "#") semitone += 1;
     if (accidental === "b") semitone -= 1;
     const midi = (octave + 1) * 12 + semitone;
-
-    // base pitch fix: tune relative to entered basePitch
     const baseRef = parseFloat(this.panel.querySelector(".basePitch").value) || 440;
     return baseRef * Math.pow(2, (midi - 69) / 12);
   }
@@ -137,7 +146,6 @@ class LoopConductor {
     return 60 / bpm;
   }
 
-  /* Parse notes by bar count and sub-notes per bar */
   parseSequence() {
     const barsText = this.panel.querySelector(".bars").value.trim();
     const [numBars] = barsText.split("/").map(n => parseInt(n));
@@ -159,7 +167,7 @@ class LoopConductor {
     this.isPlaying = true;
     const { numBars, sequence } = this.parseSequence();
     const spb = this.getSecondsPerBeat();
-    const beatDur = spb * 4 / numBars; // distribute over bars
+    const beatDur = spb * 4 / numBars;
 
     let barIndex = 0;
     const playNextBar = () => {
@@ -168,7 +176,10 @@ class LoopConductor {
       if (Array.isArray(notes)) {
         const perNoteDur = beatDur / notes.length;
         notes.forEach((note, i) => {
-          setTimeout(() => { if (note !== "Z" && note) this.playNote(this.noteToFreq(note), perNoteDur); }, i * perNoteDur * 1000);
+          setTimeout(() => {
+            if (note !== "Z" && note)
+              this.playNote(this.noteToFreq(note), perNoteDur);
+          }, i * perNoteDur * 1000);
         });
       } else if (notes !== "Z") {
         this.playNote(this.noteToFreq(notes), beatDur);
@@ -180,53 +191,26 @@ class LoopConductor {
   }
 
   playNote(freq, dur) {
-    if (!freq) return;
+    if (!freq || !this.audioCtx) return;
     const osc = this.audioCtx.createOscillator();
     const gain = this.audioCtx.createGain();
     const pan = this.audioCtx.createStereoPanner();
 
-    const waveform = this.panel.querySelector(".waveform").value;
-    osc.type = waveform;
-
-    // LFOs
-    const pitchDepth = this.settings.lfoPitch / 100 * 5;
-    if (pitchDepth > 0) {
-      const lfo = this.audioCtx.createOscillator();
-      lfo.frequency.value = 2;
-      const lfoGain = this.audioCtx.createGain();
-      lfoGain.gain.value = pitchDepth;
-      lfo.connect(lfoGain).connect(osc.frequency);
-      lfo.start(); lfo.stop(this.audioCtx.currentTime + dur);
-    }
-
-    const volDepth = this.settings.lfoVolume / 100 * 0.3;
-    if (volDepth > 0) {
-      const lfoV = this.audioCtx.createOscillator();
-      lfoV.frequency.value = 2;
-      const g = this.audioCtx.createGain();
-      g.gain.value = volDepth;
-      lfoV.connect(g).connect(gain.gain);
-      lfoV.start(); lfoV.stop(this.audioCtx.currentTime + dur);
-    }
-
-    const panDepth = this.settings.lfoPan / 100;
-    if (panDepth > 0) {
-      const lfoP = this.audioCtx.createOscillator();
-      lfoP.frequency.value = 2;
-      const g = this.audioCtx.createGain();
-      g.gain.value = panDepth;
-      lfoP.connect(g).connect(pan.pan);
-      lfoP.start(); lfoP.stop(this.audioCtx.currentTime + dur);
-    }
+    osc.type = this.panel.querySelector(".waveform").value;
 
     const now = this.audioCtx.currentTime;
     gain.gain.setValueAtTime(0, now);
     gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
     gain.gain.linearRampToValueAtTime(0, now + dur);
 
-    osc.frequency.value = freq;
     pan.pan.value = parseFloat(this.panel.querySelector(".pan").value) / 100;
-    osc.connect(gain).connect(pan).connect(this.panNode);
+
+    // connect safely within same context
+    osc.connect(gain);
+    gain.connect(pan);
+    pan.connect(this.panNode);
+
+    osc.frequency.value = freq;
     osc.start(now);
     osc.stop(now + dur);
   }
@@ -266,7 +250,7 @@ class LoopConductor {
   }
 }
 
-/* Factory and global controls */
+/* -------- Factory & Controls -------- */
 export function createTrack(container, settings) {
   const panel = document.createElement("div");
   container.appendChild(panel);
