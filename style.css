@@ -14,16 +14,30 @@ h1 { margin: 20px 0; }
   justify-content: center;
 }
 /* --- Track container layout --- */
+/* --- Track container layout (anchored left) --- */
 .track-container {
   display: flex;
-  flex-direction: row;         /* make new tracks go left → right */
-  justify-content: center;     /* keep centered in window */
+  flex-direction: row;       /* side-by-side layout */
+  justify-content: flex-start; /* align first track to far left */
   align-items: flex-start;
-  flex-wrap: nowrap;           /* prevent wrapping down */
-  gap: 20px;                   /* space between tracks */
+  flex-wrap: nowrap;         /* all tracks in one row */
+  gap: 20px;                 /* consistent spacing */
   margin: 40px auto;
-  width: fit-content;
+  width: 90vw;               /* span across screen width */
+  overflow-x: auto;          /* allow horizontal scroll if needed */
+  padding: 0 40px;
+  box-sizing: border-box;
 }
+
+/* Optional: smooth horizontal scrolling */
+.track-container::-webkit-scrollbar {
+  height: 10px;
+}
+.track-container::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 5px;
+}
+
 
 /* --- Individual track panels --- */
 .track-panel {
