@@ -1,10 +1,16 @@
+/* ==========================================================
+   Loop Conductor Pro v3.4.2
+   Cross-browser safe AudioContext + Add Track fix
+   ========================================================== */
+
 let globalAudioCtx = null;
 let globalMasterGain = null;
 let initialized = false;
 
-/* Initialize shared AudioContext once */
+/* ---------- Initialize Shared Audio Context ---------- */
 export async function initializeAudio() {
-  if (initialized) return;
+  if (initialized && globalAudioCtx && globalAudioCtx.state !== "closed") return;
+
   globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
   await globalAudioCtx.resume();
 
@@ -13,21 +19,15 @@ export async function initializeAudio() {
   globalMasterGain.gain.value = 0.8;
 
   initialized = true;
+  console.log("🎵 Audio Engine Initialized");
 }
 
-/* Main Track Class */
+/* ---------- Track Class ---------- */
 class LoopConductor {
   constructor(panel, settings = null) {
-    // ✅ Always reuse the global AudioContext
-    if (!globalAudioCtx) {
-      globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      globalMasterGain = globalAudioCtx.createGain();
-      globalMasterGain.connect(globalAudioCtx.destination);
-      globalMasterGain.gain.value = 0.8;
-    }
-    this.audioCtx = globalAudioCtx;
+    if (!globalAudioCtx) throw new Error("AudioContext not initialized. Call initializeAudio() first.");
 
-    // Track-specific nodes
+    this.audioCtx = globalAudioCtx;
     this.masterGain = this.audioCtx.createGain();
     this.masterGain.connect(globalMasterGain);
 
@@ -54,9 +54,10 @@ class LoopConductor {
 
   renderUI() {
     this.panel.className = "track-panel";
+    const idx = document.querySelectorAll(".track-panel").length + 1;
     this.panel.innerHTML = `
       <div class="track-header">
-        <h2 class="track-title"></h2>
+        <h2 class="track-title">Track ${idx}</h2>
         <button class="removeTrack">🗑️</button>
       </div>
       <label>Bars:</label><input class="bars" value="${this.settings.bars}"><br>
@@ -73,13 +74,13 @@ class LoopConductor {
 
       <div class="slider-row">
         <label>Track Volume:</label>
-        <input class="trackVol" type="range" min="0" max="100" value="${this.settings.trackVol*100}">
+        <input class="trackVol" type="range" min="0" max="100" value="${this.settings.trackVol * 100}">
         <input class="valBox trackVolVal" readonly>
       </div>
 
       <div class="slider-row">
         <label>Pan:</label>
-        <input class="pan" type="range" min="-100" max="100" value="${this.settings.pan*100}">
+        <input class="pan" type="range" min="-100" max="100" value="${this.settings.pan * 100}">
         <input class="valBox panVal" readonly>
       </div>
 
@@ -103,7 +104,6 @@ class LoopConductor {
 
       <canvas class="oscilloscope" width="350" height="100"></canvas>
     `;
-
     this.bindEvents();
   }
 
@@ -133,7 +133,6 @@ class LoopConductor {
     if (accidental === "#") semitone += 1;
     if (accidental === "b") semitone -= 1;
     const midi = (octave + 1) * 12 + semitone;
-
     const baseRef = parseFloat(this.panel.querySelector(".basePitch").value) || 440;
     return baseRef * Math.pow(2, (midi - 69) / 12);
   }
@@ -185,7 +184,7 @@ class LoopConductor {
   }
 
   playNote(freq, dur) {
-    if (!freq) return;
+    if (!freq || !this.audioCtx) return;
     const osc = this.audioCtx.createOscillator();
     const gain = this.audioCtx.createGain();
     const pan = this.audioCtx.createStereoPanner();
@@ -193,6 +192,7 @@ class LoopConductor {
     const waveform = this.panel.querySelector(".waveform").value;
     osc.type = waveform;
 
+    // Apply LFOs
     const pitchDepth = this.settings.lfoPitch / 100 * 5;
     if (pitchDepth > 0) {
       const lfo = this.audioCtx.createOscillator();
@@ -233,7 +233,12 @@ class LoopConductor {
 
     osc.frequency.value = freq;
     pan.pan.value = parseFloat(this.panel.querySelector(".pan").value) / 100;
-    osc.connect(gain).connect(pan).connect(this.panNode);
+
+    // ✅ Connect safely to global context bus
+    osc.connect(gain);
+    gain.connect(pan);
+    pan.connect(this.panNode);
+
     osc.start(now);
     osc.stop(now + dur);
   }
@@ -249,6 +254,7 @@ class LoopConductor {
     const analyser = this.audioCtx.createAnalyser();
     analyser.fftSize = 2048;
     this.masterGain.connect(analyser);
+
     const buffer = new Uint8Array(analyser.fftSize);
     const draw = () => {
       requestAnimationFrame(draw);
@@ -273,7 +279,7 @@ class LoopConductor {
   }
 }
 
-/* Factory + Global Controls */
+/* ---------- Factory + Global Controls ---------- */
 export function createTrack(container, settings) {
   const panel = document.createElement("div");
   container.appendChild(panel);
