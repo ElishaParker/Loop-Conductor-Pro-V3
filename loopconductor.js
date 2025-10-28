@@ -59,7 +59,7 @@ class LoopConductor {
 
 
 
-  playLoop() {
+  playLoop() 
     const { bpm, bars, notes, basePitch, waveform } = this.settings;
     const beatDur = 60 / bpm;
     const noteList = notes.split(/[, -]/).filter(n => n.trim() !== "");
