@@ -43,6 +43,8 @@ h1 { margin: 20px 0; }
   color: #0f0;
   border: 1px solid #333;
 }
+
+/* ========== BUTTONS ========== */
 button {
   border: none;
   padding: 5px 10px;
@@ -55,6 +57,8 @@ button#playAll { background: #0a0; color: #fff; }
 button#stopAll { background: #a00; color: #fff; }
 button#addTrack { background: #008; color: #fff; }
 button.removeTrack { background: #444; color: #fff; }
+
+/* ========== INPUTS & CANVAS ========== */
 input, select {
   background: #000;
   color: #0f0;
@@ -84,6 +88,10 @@ canvas {
   opacity: 1;
   transition: opacity 1s ease;
 }
+#splash.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
 #splashContent {
   text-align: center;
   animation: fadeIn 1.5s ease-in-out;
@@ -101,6 +109,7 @@ canvas {
   height: 100%;
   background: linear-gradient(90deg, #0f0, #0a0);
   border-radius: 8px;
+  transition: width 0.2s linear;
 }
 #loadingProgress.animate {
   animation: fillBar 7s linear forwards;
@@ -110,6 +119,7 @@ canvas {
   to { width: 100%; }
 }
 
+/* Subtle text styling for the splash */
 .donate {
   font-size: 0.9em;
   color: #ccc;
@@ -120,6 +130,7 @@ canvas {
 }
 .donate a:hover { text-decoration: underline; }
 
+/* Simple fade-in animation for splash content */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
