@@ -3,69 +3,93 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LoopConductor Pro v3.4</title>
+  <title>LoopConductor Pro v3.3</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <h1>🎵 Loop Conductor Pro</h1>
-  <div class="global-controls">
-    <button id="playAll">Play All</button>
-    <button id="stopAll">Stop All</button>
-    <button id="addTrack">+ Add Track</button>
-    <label>Master Volume <input type="range" id="masterVol" min="0" max="1" step="0.01" value="0.8" /></label>
-  </div>
-  <div id="trackContainer" class="track-container"></div>
-
-  <footer>
-    <p>© 2025 Elisha Blue Parker — LoopConductor Pro v3.4</p>
-  </footer>
-
-  <!-- Independent Splash Overlay -->
-  <div id="splash" style="display:none;">
+  <!-- Splash Screen -->
+  <div id="splash">
     <div id="splashContent">
-      <h1>🎶 Loop Conductor Pro</h1>
-      <p id="splashStatus">Initializing audio engine…</p>
-
+      <h1>🎵 LoopConductor Pro v3.3</h1>
+      <p>Initializing Audio Engine…</p>
       <div id="loadingBar"><div id="loadingProgress"></div></div>
-
-      <button id="continueBtn" style="display:none;">Continue</button>
-
       <p class="donate">
-        Support open development → 
+        Support open development:
         <a href="https://paypal.me/iamvibration" target="_blank">paypal.me/iamvibration</a>
       </p>
     </div>
   </div>
 
-  <script type="module" src="loopconductor.js"></script>
+  <!-- Main App -->
+  <div id="mainApp" style="display:none;">
+    <h1>LoopConductor Pro v3.3</h1>
+    <div class="global-controls">
+      <label>Master Volume:</label>
+      <input id="masterVolume" type="range" min="0" max="1" step="0.01" value="0.8" />
+      <button id="playAll">▶ Play All</button>
+      <button id="stopAll">⏹ Stop All</button>
+      <button id="addTrack">➕ Add Track</button>
+    </div>
+    <div id="trackContainer" class="track-container"></div>
+    <footer>
+      LoopConductor Pro v3.3 — © 2025 Elisha B. Parker
+      <a href="https://github.com/ElishaParker/Loop-Conductor-Pro" target="_blank">GitHub</a>
+    </footer>
+  </div>
 
-  <!-- Detached Splash Controller -->
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  <script type="module">
+    import { createTrack, playAll, stopAll, setGlobalVolume, initializeAudio } from "./loopconductor.js";
+
     const splash = document.getElementById("splash");
+    const mainApp = document.getElementById("mainApp");
     const progress = document.getElementById("loadingProgress");
-    const continueBtn = document.getElementById("continueBtn");
 
-    // show splash after 0.5 s
-    setTimeout(() => {
-      splash.style.display = "flex";
-      splash.classList.add("fade-in");
-      progress.classList.add("animate");
+    async function initApp() {
+      // Fake loader + warmup
+      let pct = 0;
+      const intv = setInterval(() => {
+        pct += 2;
+        progress.style.width = pct + "%";
+        if (pct >= 100) {
+          clearInterval(intv);
+          splash.classList.add("fade-out");
+          setTimeout(() => {
+            splash.style.display = "none";
+            mainApp.style.display = "block";
+            bootMain();
+          }, 1000);
+        }
+      }, 140);
+      await initializeAudio();
+    }
 
-      // fade-in continue button after 7 s
-      setTimeout(() => {
-        continueBtn.style.display = "inline-block";
-        setTimeout(() => continueBtn.classList.add("show"), 100);
-      }, 7000);
-    }, 500);
+    function bootMain() {
+      const container = document.getElementById("trackContainer");
+      const addBtn = document.getElementById("addTrack");
+      const playAllBtn = document.getElementById("playAll");
+      const stopAllBtn = document.getElementById("stopAll");
+      const masterVol = document.getElementById("masterVolume");
+      let tracks = [];
 
-    // remove splash when user clicks continue
-    continueBtn.addEventListener("click", () => {
-      splash.classList.add("fade-out");
-      setTimeout(() => splash.remove(), 1000);
-    });
-  });
+      function updateTitles() {
+        tracks.forEach((t, i) => t.querySelector(".track-title").textContent = "Track " + (i + 1));
+      }
+
+      addBtn.onclick = () => {
+        const last = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
+        const newTrack = createTrack(container, last);
+        tracks.push(newTrack);
+        updateTitles();
+      };
+
+      playAllBtn.onclick = () => playAll(tracks);
+      stopAllBtn.onclick = () => stopAll(tracks);
+      masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
+
+      addBtn.click();
+    }
+
+    initApp();
   </script>
 </body>
 </html>
