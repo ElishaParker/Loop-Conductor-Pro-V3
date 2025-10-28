@@ -41,34 +41,74 @@
   </div>
 
   <!-- Core Script -->
-  <script type="module">
-    import {
-      createTrack, playAll, stopAll, setGlobalVolume, initializeAudio
-    } from "./loopconductor.js";
+<script type="module">
+  import {
+    createTrack, playAll, stopAll, setGlobalVolume, initializeAudio
+  } from "./loopconductor.js";
 
-    const splash = document.getElementById("splash");
-    const mainApp = document.getElementById("mainApp");
-    const progress = document.getElementById("loadingProgress");
+  const splash = document.getElementById("splash");
+  const mainApp = document.getElementById("mainApp");
+  const progress = document.getElementById("loadingProgress");
 
-    // Splash + Initialization
-    async function initApp() {
-      let pct = 0;
-      const interval = setInterval(() => {
-        pct += 2;
-        progress.style.width = pct + "%";
-        if (pct >= 100) {
-          clearInterval(interval);
-          splash.classList.add("fade-out");
-          setTimeout(() => {
-            splash.style.display = "none";
-            mainApp.style.display = "block";
-            bootMain();
-          }, 1000);
-        }
-      }, 140);
-
+  async function initApp() {
+    // Wait for user gesture before audio context creation
+    document.body.addEventListener("click", async function startOnce() {
+      document.body.removeEventListener("click", startOnce);
       await initializeAudio();
+      startSplash();
+    });
+    console.log("Click anywhere to initialize audio engine...");
+  }
+
+  // Splash loading sequence
+  function startSplash() {
+    let pct = 0;
+    const intv = setInterval(() => {
+      pct += 2;
+      progress.style.width = pct + "%";
+      if (pct >= 100) {
+        clearInterval(intv);
+        splash.classList.add("fade-out");
+        setTimeout(() => {
+          splash.style.display = "none";
+          mainApp.style.display = "block";
+          bootMain();
+        }, 1000);
+      }
+    }, 140);
+  }
+
+  // Main app controls
+  function bootMain() {
+    const container = document.getElementById("trackContainer");
+    const addBtn = document.getElementById("addTrack");
+    const playBtn = document.getElementById("playAll");
+    const stopBtn = document.getElementById("stopAll");
+    const masterVol = document.getElementById("masterVolume");
+    const tracks = [];
+
+    function updateTitles() {
+      tracks.forEach((t, i) => t.querySelector(".track-title").textContent = "Track " + (i + 1));
     }
+
+    addBtn.onclick = () => {
+      const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
+      const newTrack = createTrack(container, lastSettings);
+      tracks.push(newTrack);
+      updateTitles();
+    };
+
+    playBtn.onclick = () => playAll(tracks);
+    stopBtn.onclick = () => stopAll(tracks);
+    masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
+
+    // Create first track after engine is ready
+    addBtn.click();
+  }
+
+  window.addEventListener("load", initApp);
+</script>
+
 
     // Main UI Logic
     function bootMain() {
