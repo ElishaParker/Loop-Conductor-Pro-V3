@@ -11,15 +11,19 @@ export async function initializeAudio() {
   initialized = true;
 }
 
-/* Main Track Class */
-class LoopConductor {
-  constructor(panel, settings = null) {
-    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (!globalMasterGain) {
-      globalMasterGain = this.audioCtx.createGain();
-      globalMasterGain.connect(this.audioCtx.destination);
-      globalMasterGain.gain.value = 0.8;
-    }
+// ✅ Shared Audio Context across all tracks
+if (!window.sharedAudioCtx) {
+  window.sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+this.audioCtx = window.sharedAudioCtx;
+
+// ✅ Global Master Gain (created once)
+if (!globalMasterGain) {
+  globalMasterGain = this.audioCtx.createGain();
+  globalMasterGain.connect(this.audioCtx.destination);
+  globalMasterGain.gain.value = 0.8;
+}
+
 
     this.masterGain = this.audioCtx.createGain();
     this.masterGain.connect(globalMasterGain);
