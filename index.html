@@ -7,18 +7,23 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Splash Screen -->
-  <div id="splash">
-    <div id="splashContent">
-      <h1>🎵 LoopConductor Pro v3.3</h1>
-      <p>Initializing Audio Engine…</p>
-      <div id="loadingBar"><div id="loadingProgress"></div></div>
-      <p class="donate">
-        Support open development:
-        <a href="https://paypal.me/iamvibration" target="_blank">paypal.me/iamvibration</a>
-      </p>
+ <!-- Splash Screen -->
+<div id="splash">
+  <div id="splashContent">
+    <h1>🎵 LoopConductor Pro v3.3.1</h1>
+    <p id="splashStatus">Initializing Audio Engine…</p>
+
+    <div id="loadingBar">
+      <div id="loadingProgress"></div>
     </div>
+
+    <p class="donate">
+      Support open development:
+      <a href="https://paypal.me/iamvibration" target="_blank">paypal.me/iamvibration</a>
+    </p>
   </div>
+</div>
+
 
   <!-- Main App -->
   <div id="mainApp" style="display:none;">
@@ -45,23 +50,23 @@
     const progress = document.getElementById("loadingProgress");
 
     async function initApp() {
-      // Fake loader + warmup
-      let pct = 0;
-      const intv = setInterval(() => {
-        pct += 2;
-        progress.style.width = pct + "%";
-        if (pct >= 100) {
-          clearInterval(intv);
-          splash.classList.add("fade-out");
-          setTimeout(() => {
-            splash.style.display = "none";
-            mainApp.style.display = "block";
-            bootMain();
-          }, 1000);
-        }
-      }, 140);
-      await initializeAudio();
-    }
+  // Start loading animation
+  progress.classList.add("animate");
+
+  // Preload audio engine
+  await initializeAudio();
+
+  // After 7 seconds, fade out splash
+  setTimeout(() => {
+    splash.classList.add("fade-out");
+    setTimeout(() => {
+      splash.style.display = "none";
+      mainApp.style.display = "block";
+      bootMain();
+    }, 1000);
+  }, 7000);
+}
+
 
     function bootMain() {
       const container = document.getElementById("trackContainer");
