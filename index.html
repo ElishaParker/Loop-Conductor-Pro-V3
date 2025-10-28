@@ -49,18 +49,25 @@
   const splash = document.getElementById("splash");
   const mainApp = document.getElementById("mainApp");
   const progress = document.getElementById("loadingProgress");
+  let audioReady = false;
 
   async function initApp() {
-    // Wait for user gesture before audio context creation
+    // Wait for user click to start audio context
     document.body.addEventListener("click", async function startOnce() {
       document.body.removeEventListener("click", startOnce);
-      await initializeAudio();
-      startSplash();
+      try {
+        await initializeAudio();
+        audioReady = true;
+        console.log("✅ Audio engine initialized");
+        startSplash();
+      } catch (err) {
+        console.error("Audio initialization failed:", err);
+      }
     });
-    console.log("Click anywhere to initialize audio engine...");
+    console.log("👆 Click anywhere to begin audio initialization");
   }
 
-  // Splash loading sequence
+  // Splash sequence after audio ready
   function startSplash() {
     let pct = 0;
     const intv = setInterval(() => {
@@ -72,11 +79,48 @@
         setTimeout(() => {
           splash.style.display = "none";
           mainApp.style.display = "block";
-          bootMain();
+          if (audioReady) bootMain();
+          else console.error("Audio engine not ready at splash end.");
         }, 1000);
       }
     }, 140);
   }
+
+  // Main engine UI setup
+  function bootMain() {
+    const container = document.getElementById("trackContainer");
+    const addBtn = document.getElementById("addTrack");
+    const playBtn = document.getElementById("playAll");
+    const stopBtn = document.getElementById("stopAll");
+    const masterVol = document.getElementById("masterVolume");
+    const tracks = [];
+
+    const updateTitles = () => {
+      tracks.forEach((t, i) => t.querySelector(".track-title").textContent = "Track " + (i + 1));
+    };
+
+    addBtn.onclick = () => {
+      if (!audioReady) {
+        console.warn("Audio not ready yet, ignoring track creation");
+        return;
+      }
+      const lastSettings = tracks.length ? tracks[tracks.length - 1].dataset.settings : null;
+      const newTrack = createTrack(container, lastSettings);
+      tracks.push(newTrack);
+      updateTitles();
+    };
+
+    playBtn.onclick = () => playAll(tracks);
+    stopBtn.onclick = () => stopAll(tracks);
+    masterVol.oninput = e => setGlobalVolume(parseFloat(e.target.value));
+
+    // Only add default track after verified audio context
+    if (audioReady) addBtn.click();
+  }
+
+  window.addEventListener("load", initApp);
+</script>
+
 
   // Main app controls
   function bootMain() {
