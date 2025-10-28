@@ -50,22 +50,24 @@
     const progress = document.getElementById("loadingProgress");
 
     async function initApp() {
-  // Start loading animation
+  // Start the smooth 7-second fill animation
   progress.classList.add("animate");
 
-  // Preload audio engine
+  // Wait for audio engine warmup
   await initializeAudio();
 
-  // After 7 seconds, fade out splash
+  // Auto-remove splash after animation completes
+  const splashDuration = 7000; // ms
   setTimeout(() => {
     splash.classList.add("fade-out");
     setTimeout(() => {
       splash.style.display = "none";
       mainApp.style.display = "block";
       bootMain();
-    }, 1000);
-  }, 7000);
+    }, 1000); // fade-out duration
+  }, splashDuration);
 }
+
 
 
     function bootMain() {
