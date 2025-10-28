@@ -15,10 +15,10 @@ function applyScreenScale(targetScale = 0.67) {
 
 /* Automatically apply on load */
 window.addEventListener('load', () => {
-  applyScreenScale(0.67);
+  applyScreenScale(0.63);
 });
 
 /* Optional: adjust dynamically on resize */
 window.addEventListener('resize', () => {
-  applyScreenScale(0.67);
+  applyScreenScale(0.63);
 });
