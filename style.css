@@ -13,22 +13,24 @@ h1 { margin: 20px 0; }
   flex-wrap: wrap;
   justify-content: center;
 }
-/* --- Track container layout (anchored left) --- */
+/* --- Track container layout (anchored hard left, expanding right) --- */
 .track-container {
   display: flex;
   flex-direction: row;       /* side-by-side layout */
-  justify-content: flex-start; /* align first track to far left */
+  justify-content: flex-start; /* first track stays hard left */
   align-items: flex-start;
-  flex-wrap: nowrap;         /* all tracks in one row */
-  gap: 20px;                 /* consistent spacing */
-  margin: 40px auto;
-  width: 90vw;               /* span across screen width */
-  overflow-x: auto;          /* allow horizontal scroll if needed */
-  padding: 0 40px;
+  flex-wrap: nowrap;
+  gap: 20px;
+  margin: 40px 0 40px 40px;   /* top, right, bottom, left */
+  width: 100%;
+  overflow-x: auto;           /* allow side scrolling */
+  overflow-y: hidden;
+  padding-right: 60px;
   box-sizing: border-box;
+  scroll-behavior: smooth;
 }
 
-/* Optional: smooth horizontal scrolling */
+/* Optional — makes scrolling smoother and more modern */
 .track-container::-webkit-scrollbar {
   height: 10px;
 }
@@ -36,6 +38,7 @@ h1 { margin: 20px 0; }
   background: #333;
   border-radius: 5px;
 }
+
 
 
 
