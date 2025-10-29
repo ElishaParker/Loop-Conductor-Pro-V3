@@ -1,122 +1,83 @@
-# 🎵 Loop Conductor Pro v3.3
-
-An interactive browser-based **multi-track loop synthesizer** built with pure HTML, CSS, and JavaScript.  
-Each track acts as an independent tone generator with its own waveform, volume, pan, BPM, and LFO modulation.  
-Designed for creative sound exploration, live layering, and musical experimentation.
+# 🎵 Loop Conductor Pro v3.3  
+**A modular web-based multi-track loop synthesizer**  
+[Live Demo → https://elishaparker.github.io/Loop-Conductor-Pro-V3/](https://elishaparker.github.io/Loop-Conductor-Pro-V3/)
 
 ---
 
-## 🚀 Features
+## 🎧 Overview
+**Loop Conductor Pro** is a browser-based modular synth and loop sequencer that allows you to create evolving rhythmic and tonal landscapes directly in your browser.  
+Each track operates as an independent oscillator channel with customizable:
+- Waveform (sine, square, triangle, saw)
+- BPM, bars, and base frequency
+- LFOs for pitch, pan, and volume (each with depth and speed controls)
+- Global master volume, play/stop, and dynamic track addition
 
-- 🎚️ Individual track modules with:
-  - Adjustable volume, pan, BPM, pitch, and waveform.
-  - LFO modulation for pitch, pan, and volume.
-- 🧠 Independent oscillators per track.
-- 🎛️ Master control panel with Play/Stop and Add Track.
-- 💡 Dynamic scaling via **ScreenController.js** (responsive zoom & offset).
-- 🌌 Infinite horizontal scrolling layout (tracks expand left ➜ right).
-- ⚡ Smooth UI transitions with persistent audio context.
-
----
-
-## 🧩 Structure
-
-| File | Description |
-|------|--------------|
-| `index.html` | Main HTML layout |
-| `style.css` | Global styles, themes, and responsive layout |
-| `script.js` | Core audio engine and UI logic |
-| `ScreenController.js` | Visual scaling and alignment handler |
+The interface is fully responsive, running smoothly on both **desktop and Android mobile** — optimized for live performance and portable creation.
 
 ---
 
-## 🧠 Version History
+## 🧠 Technical Architecture
+Built entirely in **HTML5, CSS3, and vanilla JavaScript**, Loop Conductor Pro is powered by the **Web Audio API** and dynamic DOM rendering.  
+Each track is independently generated, creating real-time frequency synthesis with low-latency control mapping.
 
-| Version | Update |
-|----------|--------|
-| v3.3 | Stable release — scaling fixed, color restored, horizontal flow active |
-| v3.2 | LFO and waveform control |
-| v3.1 | Modular track generation |
-| v3.0 | Core audio engine rewrite |
-
----
-
-## ⚙️ Future Plans (v3.4+)
-
-- ✅ Center header, left-align tracks.
-- 🌈 Add waveform visualization per track.
-- 💾 Local storage save/load.
-- 🔊 Add reverb, delay, and compression modules.
+**Core modules:**
+- `loopconductor.js` — Audio engine, track management, oscillator routing  
+- `style.css` — Minimal dark-theme responsive layout  
+- `index.html` — UI + event controller + splash + scaling logic  
+- `screencontroller.js` — Dynamic viewport scaling for uniform visual performance  
 
 ---
 
-## 🌐 SEO & AEO Optimization
+## 📱 Cross-Platform Design
+Loop Conductor Pro v3.3 uses adaptive scaling logic for unified visual output across:
+- Desktop browsers (Chrome, Edge, Firefox)
+- Android mobile browsers (Chrome/Brave)
+- GitHub Pages deployment via static assets
 
-### Search Engine Optimization (SEO)
-To help your GitHub Pages site appear in search results:
-
-1. Add this to your `<head>` section of `index.html`:
-   ```html
-   <meta name="description" content="Loop Conductor Pro — browser-based multi-track synthesizer for live sound design and frequency exploration.">
-   <meta name="keywords" content="music app, tone generator, synthesizer, LFO, frequency modulation, sound design, Elisha Parker">
-   <meta name="author" content="Elisha B. Parker">
-````
-
-2. Include a proper title:
-
-   ```html
-   <title>Loop Conductor Pro v3.3 | Elisha Parker</title>
-   ```
-
-3. Use descriptive alt tags on images and descriptive commit messages.
+> ✅ Current version tested and verified on Android Chrome, Windows Edge, and Chrome (desktop).  
 
 ---
 
-### AI Engine Optimization (AEO)
-
-To make the project readable by AI search systems like ChatGPT, Perplexity, etc.:
-
-* Keep your **README.md structured** with consistent headers.
-* Include semantic keywords like:
-
-  * `AI-compatible synthesizer`
-  * `Web Audio API demo`
-  * `Generative music app`
-* Add a `schema.org` block at the bottom of your `index.html`:
-
-  ```html
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Loop Conductor Pro",
-    "applicationCategory": "Music & Sound Generator",
-    "creator": { "@type": "Person", "name": "Elisha B. Parker" },
-    "url": "https://elishaparker.github.io/Loop-Conductor-Pro-V3/",
-    "operatingSystem": "Any (Web)",
-    "softwareVersion": "3.3"
-  }
-  </script>
-
+## 💡 Features
+- Multi-track looping with additive layering  
+- Live-adjustable LFO depth & speed  
+- Frequency-based modulation synced to BPM  
+- Horizontal scroll for infinite track expansion  
+- Smooth scaling via `transform` matrix for consistent layout  
+- Instant audio engine initialization with click activation (browser-safe)  
+- Animated LFO waveform preview per track  
 
 ---
 
-## 💖 Support
+## 🧩 Planned Additions (v3.4)
+- Auto-scale detection for mobile vs. desktop
+- PWA (Progressive Web App) support for offline use
+- Session save/load
+- Built-in sample playback & waveform visualization
+- MIDI-in support for live external control
 
-If you enjoy this project, you can support future development via
+---
+
+## 🌐 SEO / Meta
+**Title:** Loop Conductor Pro — Modular Web Synthesizer  
+**Description:** Create, layer, and perform evolving sound loops directly in your browser. A modular, cross-platform Web Audio sequencer by Elisha B. Parker.  
+**Keywords:** web synth, audio loop, modular DAW, LFO generator, Web Audio API, sound design, Elisha Parker, browser sequencer  
+
+---
+
+## 💜 Support the Creator
+Development and hosting are maintained by **Elisha B. Parker**.  
+If you enjoy this project or use it in your work, consider supporting open development:  
 👉 [paypal.me/iamvibration](https://paypal.me/iamvibration)
 
+---
 
-## 🧾 License
-
-© 2025 Elisha Blue Parker. All Rights Reserved.
-Licensed for personal and commercial music production use.
-Redistribution, reverse-engineering, or resale of source code or assets is prohibited without written permission.
+## ⚙️ License
+© 2025 Elisha B. Parker.  
+All rights reserved. Code and design are proprietary unless explicit permission is granted.  
+For collaboration or licensing inquiries, please contact via the project repository.
 
 ---
 
-## 🌌 Credits & Philosophy
-
-LoopConductor Pro is the result of a collaboration between Elisha Blue Parker and Lennard — an experiment in bridging logic and creativity.
-It treats sound as both signal and story: a living loop where code conducts rhythm, and every frequency becomes a thread in the human-AI symphony.
-
+**Live Demo:** [https://elishaparker.github.io/Loop-Conductor-Pro-V3/](https://elishaparker.github.io/Loop-Conductor-Pro-V3/)  
+**Creator:** [Elisha B. Parker](https://paypal.me/iamvibration)  
