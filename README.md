@@ -1,109 +1,111 @@
-# 🎵 LoopConductor Pro v3 — Multi-Track Edition
+# 🎵 Loop Conductor Pro v3.3
 
-### Modular Web Audio Sequencer • Global Control • Visual Oscilloscopes
-
-[▶ **Live Demo**](https://elishaparker.github.io/Loop-Conductor-Pro-V3/)
-
----
-
-## 🚀 Overview
-
-**LoopConductor Pro v3** transforms the browser into a live modular music workstation.
-It expands on the v2 single-track engine with **multi-track mixing**, **global playback**, and **waveform customization** — all rendered and synchronized through the Web Audio API.
-Every track operates as an independent synth channel with its own oscilloscope, color, tone, and modulation profile.
+An interactive browser-based **multi-track loop synthesizer** built with pure HTML, CSS, and JavaScript.  
+Each track acts as an independent tone generator with its own waveform, volume, pan, BPM, and LFO modulation.  
+Designed for creative sound exploration, live layering, and musical experimentation.
 
 ---
 
-## 🧠 Key Features
+## 🚀 Features
 
-| Category                   | Description                                                   |
-| -------------------------- | ------------------------------------------------------------- |
-| **Global Play / Stop**     | One control bar manages all tracks in sync                    |
-| **Add / Remove Tracks**    | Build or trim your layout dynamically                         |
-| **Auto-Numbered Titles**   | Each new panel labels itself “Track 1… N”                     |
-| **Cloned Track Templates** | New tracks inherit the previous track’s settings              |
-| **Waveform Selector**      | Choose `sine`, `square`, `sawtooth`, or `triangle` per track  |
-| **Compact Oscilloscope**   | Real-time waveform display, adjustable color & line thickness |
-| **LFO Controls**           | Independent pitch, pan, and volume modulators                 |
-| **Envelope Smoothing**     | Eliminates clicks on note transitions                         |
-| **Full Pitch Range**       | Supports A0 – C8 with custom base-pitch tuning                |
-| **Responsive Layout**      | Tracks align horizontally and wrap gracefully                 |
+- 🎚️ Individual track modules with:
+  - Adjustable volume, pan, BPM, pitch, and waveform.
+  - LFO modulation for pitch, pan, and volume.
+- 🧠 Independent oscillators per track.
+- 🎛️ Master control panel with Play/Stop and Add Track.
+- 💡 Dynamic scaling via **ScreenController.js** (responsive zoom & offset).
+- 🌌 Infinite horizontal scrolling layout (tracks expand left ➜ right).
+- ⚡ Smooth UI transitions with persistent audio context.
 
 ---
 
-## 🎛️ Controls Per Track
+## 🧩 Structure
 
-| Control          | Type         | Default     | Function                        |
-| ---------------- | ------------ | ----------- | ------------------------------- |
-| Bars             | Text         | 4/4         | Time-signature (beats per loop) |
-| BPM              | Number       | 120         | Tempo (beats / minute)          |
-| Notes            | Text         | C4-D4-E4-G4 | Note sequence                   |
-| Base Pitch (Hz)  | Number       | 440         | Master tuning (A4 = BasePitch)  |
-| Waveform         | Dropdown     | sine        | Select oscillator shape         |
-| LFO Pitch (Hz)   | Number       | 0           | Vibrato rate                    |
-| LFO Pan (Hz)     | Number       | 0           | Stereo oscillation rate         |
-| LFO Volume (Hz)  | Number       | 0           | Tremolo rate                    |
-| Master Volume    | Range        | 0.8         | Output gain                     |
-| Line Thickness   | Range        | 2           | Oscilloscope stroke width       |
-| Line Color       | Color Picker | #00ff00     | Waveform color                  |
-| 🗑️ Remove Track | Button       | —           | Deletes the panel               |
+| File | Description |
+|------|--------------|
+| `index.html` | Main HTML layout |
+| `style.css` | Global styles, themes, and responsive layout |
+| `script.js` | Core audio engine and UI logic |
+| `ScreenController.js` | Visual scaling and alignment handler |
 
 ---
 
-## ⚙️ Architecture
+## 🧠 Version History
 
-Built with **JavaScript ES Modules**, **Web Audio API**, and **HTML5 Canvas**.
-
-### Audio Routing
-
-```
-Oscillator → Gain → MasterGain → Analyser → AudioContext.destination
-```
-
-### Visualization Flow
-
-```
-AnalyserNode → ByteTimeDomainData → Canvas (≈60 FPS render)
-```
+| Version | Update |
+|----------|--------|
+| v3.3 | Stable release — scaling fixed, color restored, horizontal flow active |
+| v3.2 | LFO and waveform control |
+| v3.1 | Modular track generation |
+| v3.0 | Core audio engine rewrite |
 
 ---
 
-## 🧩 Getting Started
+## ⚙️ Future Plans (v3.4+)
 
-```bash
-# Clone the repository
-git clone https://github.com/ElishaParker/Loop-Conductor-Pro.git
-cd Loop-Conductor-Pro
-
-# Open in browser
-start index.html   # (Windows)
-open index.html    # (macOS)
-```
-
-Or run the [**Live Demo**](https://elishaparker.github.io/Loop-Conductor-Pro-V3/) directly.
+- ✅ Center header, left-align tracks.
+- 🌈 Add waveform visualization per track.
+- 💾 Local storage save/load.
+- 🔊 Add reverb, delay, and compression modules.
 
 ---
 
-## 🧠 Tips & Usage
+## 🌐 SEO & AEO Optimization
 
-* Use **Base Pitch** to retune the entire instrument (e.g., 432 Hz or 528 Hz).
-* **Add Track** to layer harmonies or percussion patterns; cloned parameters let you vary only what you need.
-* Adjust oscilloscope color and thickness for visual rhythm alignment.
-* Explore waveform types to sculpt timbre.
-* For quieter blending, balance **Master Volume** per track.
+### Search Engine Optimization (SEO)
+To help your GitHub Pages site appear in search results:
+
+1. Add this to your `<head>` section of `index.html`:
+   ```html
+   <meta name="description" content="Loop Conductor Pro — browser-based multi-track synthesizer for live sound design and frequency exploration.">
+   <meta name="keywords" content="music app, tone generator, synthesizer, LFO, frequency modulation, sound design, Elisha Parker">
+   <meta name="author" content="Elisha B. Parker">
+````
+
+2. Include a proper title:
+
+   ```html
+   <title>Loop Conductor Pro v3.3 | Elisha Parker</title>
+   ```
+
+3. Use descriptive alt tags on images and descriptive commit messages.
 
 ---
 
-## 🧪 Planned Roadmap
+### AI Engine Optimization (AEO)
 
-| Version  | Feature                                 |
-| -------- | --------------------------------------- |
-| **v3.1** | Preset save/load (localStorage)         |
-| **v3.2** | Waveform morphing & custom LFO depth    |
-| **v3.3** | FX bus (delay/reverb)                   |
-| **v3.4** | Multi-clock sync / external MIDI bridge |
+To make the project readable by AI search systems like ChatGPT, Perplexity, etc.:
+
+* Keep your **README.md structured** with consistent headers.
+* Include semantic keywords like:
+
+  * `AI-compatible synthesizer`
+  * `Web Audio API demo`
+  * `Generative music app`
+* Add a `schema.org` block at the bottom of your `index.html`:
+
+  ```html
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Loop Conductor Pro",
+    "applicationCategory": "Music & Sound Generator",
+    "creator": { "@type": "Person", "name": "Elisha B. Parker" },
+    "url": "https://elishaparker.github.io/Loop-Conductor-Pro-V3/",
+    "operatingSystem": "Any (Web)",
+    "softwareVersion": "3.3"
+  }
+  </script>
+
 
 ---
+
+## 💖 Support
+
+If you enjoy this project, you can support future development via
+👉 [paypal.me/iamvibration](https://paypal.me/iamvibration)
+
 
 ## 🧾 License
 
