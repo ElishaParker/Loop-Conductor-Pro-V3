@@ -130,23 +130,25 @@ addBtn.click(); // auto-create first track
 window.addEventListener("load", initApp);
 </script>
 
-<!-- 🎛 Screen Controller (visual scaling to 63%) -->
+
+<!-- 🎛 Screen Controller (visual scaling to 60%) -->
 <script>
-function applyScreenScale(targetScale = 0.63) {
+function applyScreenScale(targetScale = 0.60) {
   const app = document.getElementById('mainApp');
   if (!app) return;
 
+  // Keep full width and apply proportional height scale
   app.style.transformOrigin = 'top left';
-  app.style.transform = `scale(${targetScale})`;
+  app.style.transform = `scale(${targetScale}, 1)`; // height scaled, width full
   app.style.transition = 'transform 0.4s ease';
 
-  // Align to left edge
+  // Stretch to full browser width, anchored left
+  app.style.width = '100%';
   app.style.marginLeft = '0';
+  app.style.height = `${window.innerHeight}px`;
 }
 
 /* Reapply on load and resize */
-window.addEventListener('load', () => applyScreenScale(0.63));
-window.addEventListener('resize', () => applyScreenScale(0.63));
+window.addEventListener('load', () => applyScreenScale(0.60));
+window.addEventListener('resize', () => applyScreenScale(0.60));
 </script>
-</body>
-</html>
