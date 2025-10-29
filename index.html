@@ -133,17 +133,19 @@ window.addEventListener("load", initApp);
 <!-- 🎛 Screen Controller (visual scaling to 63%) -->
 <script>
 function applyScreenScale(targetScale = 0.63) {
-const app = document.getElementById('mainApp');
-if (!app) return;
+  const app = document.getElementById('mainApp');
+  if (!app) return;
 
-app.style.transformOrigin = 'top center';
-app.style.transform = `scale(${targetScale})`;
-app.style.transition = 'transform 0.4s ease';
+  app.style.transformOrigin = 'top left';
+  app.style.transform = `scale(${targetScale})`;
+  app.style.transition = 'transform 0.4s ease';
 
-const offsetX = (window.innerWidth - (app.offsetWidth * targetScale));
-app.style.marginLeft = `${offsetX}px`;
+  // Align to left edge
+  app.style.marginLeft = '0';
 }
 
+/* Reapply on load and resize */
+window.addEventListener('load', () => applyScreenScale(0.63));
 window.addEventListener('resize', () => applyScreenScale(0.63));
 </script>
 </body>
