@@ -24,11 +24,21 @@ padding: 10px;
 margin: 10px;
 width: 380px;
 }
-.track-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
+/* ========== TRACK LAYOUT ========== */
+.track-container {
+  display: flex;
+  flex-wrap: nowrap;           /* single row only */
+  justify-content: flex-start; /* align items to far left */
+  align-items: flex-start;     /* top alignment */
+  overflow-x: auto;            /* allow horizontal scrolling */
+  overflow-y: hidden;
+  scroll-behavior: smooth;     /* smooth scrolling */
+  gap: 20px;                   /* space between tracks */
+  padding: 20px;
+  margin: 0 auto;
+  background: #111;
 }
+
 .slider-row {
 display: flex;
 align-items: center;
