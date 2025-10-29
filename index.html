@@ -140,11 +140,11 @@ app.style.transformOrigin = 'top center';
 app.style.transform = `scale(${targetScale})`;
 app.style.transition = 'transform 0.4s ease';
 
-const offsetX = (window.innerWidth - (app.offsetWidth * targetScale)) / 2;
+const offsetX = (window.innerWidth - (app.offsetWidth * targetScale));
 app.style.marginLeft = `${offsetX}px`;
 }
 
-window.addEventListener('resize', () => applyScreenScale(0.67));
+window.addEventListener('resize', () => applyScreenScale(0.63));
 </script>
 </body>
 </html>
