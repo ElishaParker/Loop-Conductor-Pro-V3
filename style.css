@@ -10,10 +10,13 @@ html, body {
 h1 { margin: 20px 0; }
 .global-controls { margin: 10px auto; }
 .track-container {
-display: flex;
-flex-wrap: wrap;
-justify-content: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-x: auto;
+  scroll-behavior: smooth;
 }
+
 
 /* ========== TRACK PANELS ========== */
 .track-panel {
