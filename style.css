@@ -69,21 +69,27 @@ display: block;
 margin: 5px auto;
 }
 
-/* ========== SPLASH SCREEN ========== */
 #splash {
-position: fixed;
-top: 0; left: 0;
-width: 100%; height: 100%;
-background: #000;
-color: #eee;
-display: flex;
-align-items: center;
-justify-content: center;
-flex-direction: column;
-z-index: 9999;
-opacity: 1;
-transition: opacity 1s ease;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #000;
+  color: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 1s ease;
 }
+
+/* ensure dark underneath splash fade */
+html, body {
+  background-color: #111;
+  height: 100%;
+}
+
 #splash.fade-out { opacity: 0; pointer-events: none; }
 #splashContent {
 text-align: center;
