@@ -8,7 +8,7 @@ function applyScreenScale(targetScale = 0.63) {
   app.style.transition = 'transform 0.4s ease';
 
   // Slight left alignment instead of full centering
-  const offsetX = (window.innerWidth - (app.offsetWidth * targetScale)) / 1;
+  const offsetX = (window.innerWidth - (app.offsetWidth * targetScale)) / -2.5;
   app.style.marginLeft = `${offsetX}px`;
 }
 
