@@ -132,23 +132,23 @@ window.addEventListener("load", initApp);
 
 
 <!-- 🎛 Screen Controller (visual scaling to 60%) -->
+<!-- 🎛 Screen Controller (independent width & height scaling) -->
 <script>
-function applyScreenScale(targetScale = 0.60) {
+function applyScreenScale(widthScale = 1.0, heightScale = 0.6) {
   const app = document.getElementById('mainApp');
   if (!app) return;
 
-  // Keep full width and apply proportional height scale
   app.style.transformOrigin = 'top left';
-  app.style.transform = `scale(${targetScale}, 1)`; // height scaled, width full
+  app.style.transform = `scale(${widthScale}, ${heightScale})`;
   app.style.transition = 'transform 0.4s ease';
 
-  // Stretch to full browser width, anchored left
-  app.style.width = '100%';
+  app.style.width = `${100 / widthScale}%`; // ensures full visible width
+  app.style.height = `${100 / heightScale}%`; // keeps vertical space consistent
   app.style.marginLeft = '0';
-  app.style.height = `${window.innerHeight}px`;
 }
 
-/* Reapply on load and resize */
-window.addEventListener('load', () => applyScreenScale(0.60));
-window.addEventListener('resize', () => applyScreenScale(0.60));
+/* Apply on load and resize */
+window.addEventListener('load', () => applyScreenScale(1.0, 0.6));
+window.addEventListener('resize', () => applyScreenScale(1.0, 0.6));
 </script>
+
